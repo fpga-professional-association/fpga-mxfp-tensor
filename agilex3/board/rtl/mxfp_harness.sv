@@ -148,7 +148,7 @@ module mxfp_harness #(
   end
 
   // ------------------------------------------------------------------ sequencer
-  typedef enum logic [2:0] {S_IDLE, S_RST, S_LOAD2, S_LOAD1, S_STREAM, S_DRAIN, S_DONE} state_t;
+  typedef enum logic [2:0] {S_IDLE, S_RST, S_LOADA, S_LOAD2, S_LOAD1, S_STREAM, S_DRAIN, S_DONE} state_t;
   state_t state;
 
   // stage 0: command generation; stage 1: data mux (RAM output) -> DUT
@@ -206,10 +206,15 @@ module mxfp_harness #(
         end
         S_RST: begin
           cycles <= cycles + 1;
-          if (rst_cnt == 0) begin dut_rst <= 1'b0; state <= S_LOAD2; end
+          if (rst_cnt == 0) begin dut_rst <= 1'b0; state <= S_LOADA; end
           else rst_cnt <= rst_cnt - 1;
         end
-        S_LOAD2: begin
+        S_LOADA: begin // first load_en cycle: data is don't-care (paper TB presents zeros)
+          cycles <= cycles + 1;
+          s0_load <= 1'b1; s0_sel_w2 <= 1'b1;
+          state <= S_LOAD2;
+        end
+        S_LOAD2: begin // second load_en cycle: column-2 weights
           cycles <= cycles + 1;
           s0_load <= 1'b1; s0_sel_w2 <= 1'b1;
           state <= S_LOAD1;
@@ -252,13 +257,28 @@ module mxfp_harness #(
   logic [W-1:0] mx_data_in [0:DOT_LEN-1];
   always_comb for (int j = 0; j < DOT_LEN; j++) mx_data_in[j] = dut_vec[j*W +: W];
 
+  // mxfp_dot pipelines mx_data_in and shared_exponent by PIPE stages but passes load_en and
+  // valid_in straight through (its testbench uses PIPE=0). Delay the controls here so the DSP
+  // sees them aligned with the data.
+  logic dut_load_al, dut_valid_al;
+  generate if (PIPE == 0) begin : g_nopipe
+    assign dut_load_al = dut_load; assign dut_valid_al = dut_valid;
+  end else begin : g_pipe
+    logic [PIPE-1:0] ld_sr, vl_sr;
+    always_ff @(posedge clk) begin
+      ld_sr <= {ld_sr, dut_load};
+      vl_sr <= {vl_sr, dut_valid};
+    end
+    assign dut_load_al = ld_sr[PIPE-1]; assign dut_valid_al = vl_sr[PIPE-1];
+  end endgenerate
+
   mxfp_dot #(
     .M(M), .E(E), .E_SHARED(8), .FP_BIAS(1), .SH_BIAS(127), .PIPE(PIPE), .DOT_LEN(DOT_LEN)
   ) dut (
     .clk(clk),
     .rst(dut_rst),
-    .load_en(dut_load),
-    .valid_in(dut_valid),
+    .load_en(dut_load_al),
+    .valid_in(dut_valid_al),
     .mx_data_in(mx_data_in),
     .shared_exponent(dut_exp),
     .fp32_dot_out_col1(dut_out1),

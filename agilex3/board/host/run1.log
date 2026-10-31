@@ -1,0 +1,110 @@
+--------------------------------------------------------------------------------
+ Version 26.1 110
+ Copyright (C) 2026 Intel Corporation. All rights reserved.
+ Your use of Intel Corporation's design tools, logic functions
+ and other software and tools, and its AMPP partner logic
+ functions, and any output files from any of the foregoing
+ (including device programming or simulation files), and any
+ associated documentation or information is expressly subject
+ to the terms and conditions of the Intel Program License
+ Subscription Agreement, the Intel Quartus Prime License Agreement,
+ the Intel MegaCore Function License Agreement, or other
+ applicable license agreement, including, without limitation,
+ that your use is for the sole purpose of programming logic
+ devices manufactured by Intel and sold by Intel or its
+ authorized distributors.  Please refer to the applicable
+ agreement for further details. For license details, refer to the
+ End User License Agreement at http://fpgasoftware.intel.com/eula.
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+ Welcome to Intel's FPGA System Console
+
+ This Tcl console provides access to the hardware modules instantiated in your
+ FPGA. You can use System Console for all of the following purposes:
+
+    * To read or write Avalon Memory-Mapped (Avalon-MM) slaves using special
+      masters
+    * To sample the Platform Designer system clock and system reset signal
+    * To run JTAG loopback tests to analyze board noise problems
+    * To shift arbitrary instruction register and data register values to
+      instantiated system level debug (SLD) nodes
+    * To source and probe signals connected to In-System Sources and Probes
+      (ISSP) nodes
+
+--------------------------------------------------------------------------------
+master: /devices/A3C(W100BM16A|Y100BM16A)|..@1#USB-1#USB Blaster III/(link)/JTAG/(110:132 v1 #0)/phy_0/master
+ID       = 0x4D580001 (expect 0x4D580001)
+FORMAT   = E2 M1 (data file E2 M1)
+DUT clock ~ 249.87 MHz (counter delta 250373658 over 1002 ms)
+STATUS   = 0x2 (bit1 done, bit2 overrun)
+CYCLES   = 0x0000005a DUT clocks from START to last result (64 vectors)
+  vec  0: col1 0x42000000 (exp 0xC2B88000)  col2 0x00000000 (exp 0xC4580000)  MISMATCH
+  vec  1: col1 0x7FC00000 (exp 0xC0120000)  col2 0x7FC00000 (exp 0x42810000)  MISMATCH
+  vec  2: col1 0x7FC00000 (exp 0xC51E0000)  col2 0x7FC00000 (exp 0x479F0000)  MISMATCH
+  vec  3: col1 0x7FC00000 (exp 0x45B10000)  col2 0x7FC00000 (exp 0xC7EC0000)  MISMATCH
+  vec  4: col1 0x7FC00000 (exp 0xC2270000)  col2 0x7FC00000 (exp 0x43930000)  MISMATCH
+  vec  5: col1 0x7FC00000 (exp 0x44308000)  col2 0x7FC00000 (exp 0x45D00000)  MISMATCH
+  vec  6: col1 0x7FC00000 (exp 0xC1C40000)  col2 0x7FC00000 (exp 0xC3680000)  MISMATCH
+  vec  7: col1 0x7FC00000 (exp 0xBE020000)  col2 0x7FC00000 (exp 0xC1038000)  MISMATCH
+  vec  8: col1 0x7FC00000 (exp 0xC2C00000)  col2 0x7FC00000 (exp 0x45CC0000)  MISMATCH
+  vec  9: col1 0x7FC00000 (exp 0xC1120000)  col2 0x7FC00000 (exp 0xC3818000)  MISMATCH
+  vec 10: col1 0x7FC00000 (exp 0xC2A30000)  col2 0x7FC00000 (exp 0xC4140000)  MISMATCH
+  vec 11: col1 0x7FC00000 (exp 0x43A30000)  col2 0x7FC00000 (exp 0xC5A70000)  MISMATCH
+  vec 12: col1 0x7FC00000 (exp 0x3E940000)  col2 0x7FC00000 (exp 0xC0C40000)  MISMATCH
+  vec 13: col1 0x7FC00000 (exp 0x40480000)  col2 0x7FC00000 (exp 0x43540000)  MISMATCH
+  vec 14: col1 0x7FC00000 (exp 0x42A80000)  col2 0x7FC00000 (exp 0xC4D00000)  MISMATCH
+  vec 15: col1 0x7FC00000 (exp 0xC3D00000)  col2 0x7FC00000 (exp 0x47530000)  MISMATCH
+  vec 16: col1 0x7FC00000 (exp 0xBF430000)  col2 0x7FC00000 (exp 0xC1770000)  MISMATCH
+  vec 17: col1 0x7FC00000 (exp 0x44900000)  col2 0x7FC00000 (exp 0x485E8000)  MISMATCH
+  vec 18: col1 0x7FC00000 (exp 0x42080000)  col2 0x7FC00000 (exp 0x450C0000)  MISMATCH
+  vec 19: col1 0x7FC00000 (exp 0x43160000)  col2 0x7FC00000 (exp 0xC5460000)  MISMATCH
+  vec 20: col1 0x7FC00000 (exp 0x44B00000)  col2 0x7FC00000 (exp 0x472C0000)  MISMATCH
+  vec 21: col1 0x7FC00000 (exp 0x458F0000)  col2 0x7FC00000 (exp 0x47CB0000)  MISMATCH
+  vec 22: col1 0x7FC00000 (exp 0x453F0000)  col2 0x7FC00000 (exp 0xC7730000)  MISMATCH
+  vec 23: col1 0x7FC00000 (exp 0x41978000)  col2 0x7FC00000 (exp 0x434D8000)  MISMATCH
+  vec 24: col1 0x7FC00000 (exp 0xC4CC0000)  col2 0x7FC00000 (exp 0x46C20000)  MISMATCH
+  vec 25: col1 0x7FC00000 (exp 0x3FC60000)  col2 0x7FC00000 (exp 0xC1040000)  MISMATCH
+  vec 26: col1 0x7FC00000 (exp 0x3F3D0000)  col2 0x7FC00000 (exp 0xC0340000)  MISMATCH
+  vec 27: col1 0x7FC00000 (exp 0xC3390000)  col2 0x7FC00000 (exp 0x45090000)  MISMATCH
+  vec 28: col1 0x7FC00000 (exp 0x43B50000)  col2 0x7FC00000 (exp 0xC5440000)  MISMATCH
+  vec 29: col1 0x7FC00000 (exp 0xC0980000)  col2 0x7FC00000 (exp 0x42960000)  MISMATCH
+  vec 30: col1 0x7FC00000 (exp 0x40250000)  col2 0x7FC00000 (exp 0xC0000000)  MISMATCH
+  vec 31: col1 0x7FC00000 (exp 0x40D70000)  col2 0x7FC00000 (exp 0x420C0000)  MISMATCH
+  vec 32: col1 0x7FC00000 (exp 0x3F6D0000)  col2 0x7FC00000 (exp 0xC0A40000)  MISMATCH
+  vec 33: col1 0xC4580000 (exp 0xC0880000)  col2 0x00000000 (exp 0x43200000)  MISMATCH
+  vec 34: col1 0x42810000 (exp 0x43978000)  col2 0x00000000 (exp 0xC4CF0000)  MISMATCH
+  vec 35: col1 0x479F0000 (exp 0xC5B00000)  col2 0x00000000 (exp 0x47988000)  MISMATCH
+  vec 36: col1 0xC7EC0000 (exp 0x3E800000)  col2 0x00000000 (exp 0xC1FE0000)  MISMATCH
+  vec 37: col1 0x43930000 (exp 0x3FE80000)  col2 0x00000000 (exp 0x42A10000)  MISMATCH
+  vec 38: col1 0x45D00000 (exp 0x44040000)  col2 0x00000000 (exp 0xC68A0000)  MISMATCH
+  vec 39: col1 0xC3680000 (exp 0xC2C40000)  col2 0x00000000 (exp 0xC65C8000)  MISMATCH
+  vec 40: col1 0xC1038000 (exp 0xC2000000)  col2 0x00000000 (exp 0xC5510000)  MISMATCH
+  vec 41: col1 0x45CC0000 (exp 0x3D800000)  col2 0x00000000 (exp 0x42FC0000)  MISMATCH
+  vec 42: col1 0xC3818000 (exp 0xC4E80000)  col2 0x00000000 (exp 0x45E80000)  MISMATCH
+  vec 43: col1 0xC4140000 (exp 0x43780000)  col2 0x00000000 (exp 0xC5B80000)  MISMATCH
+  vec 44: col1 0xC5A70000 (exp 0xC3DD8000)  col2 0x00000000 (exp 0x45838000)  MISMATCH
+  vec 45: col1 0xC0C40000 (exp 0xC0880000)  col2 0x00000000 (exp 0xC3100000)  MISMATCH
+  vec 46: col1 0x43540000 (exp 0xC4200000)  col2 0x00000000 (exp 0x46120000)  MISMATCH
+  vec 47: col1 0xC4D00000 (exp 0x402C0000)  col2 0x00000000 (exp 0x42020000)  MISMATCH
+  vec 48: col1 0x47530000 (exp 0x3CC00000)  col2 0x00000000 (exp 0x41AA8000)  MISMATCH
+  vec 49: col1 0xC1770000 (exp 0xC09C0000)  col2 0x00000000 (exp 0xC28F0000)  MISMATCH
+  vec 50: col1 0x485E8000 (exp 0x42000000)  col2 0x00000000 (exp 0xC3380000)  MISMATCH
+  vec 51: col1 0x450C0000 (exp 0xC2330000)  col2 0x00000000 (exp 0xC43D0000)  MISMATCH
+  vec 52: col1 0xC5460000 (exp 0x3FF90000)  col2 0x00000000 (exp 0xC1420000)  MISMATCH
+  vec 53: col1 0x472C0000 (exp 0x428C0000)  col2 0x00000000 (exp 0x43E80000)  MISMATCH
+  vec 54: col1 0x47CB0000 (exp 0xC1680000)  col2 0x00000000 (exp 0x440E8000)  MISMATCH
+  vec 55: col1 0xC7730000 (exp 0x42300000)  col2 0x00000000 (exp 0x44960000)  MISMATCH
+  vec 56: col1 0x434D8000 (exp 0x45940000)  col2 0x00000000 (exp 0xC84E8000)  MISMATCH
+  vec 57: col1 0x46C20000 (exp 0xC2DD0000)  col2 0x00000000 (exp 0xC3000000)  MISMATCH
+  vec 58: col1 0xC1040000 (exp 0xC5B50000)  col2 0x00000000 (exp 0x472C0000)  MISMATCH
+  vec 59: col1 0xC0340000 (exp 0x42120000)  col2 0x00000000 (exp 0x44010000)  MISMATCH
+  vec 60: col1 0x45090000 (exp 0x3E480000)  col2 0x00000000 (exp 0xC1430000)  MISMATCH
+  vec 61: col1 0xC5440000 (exp 0xBFBF0000)  col2 0x00000000 (exp 0xC0400000)  MISMATCH
+  vec 62: col1 0x42960000 (exp 0x40000000)  col2 0x00000000 (exp 0x43800000)  MISMATCH
+  vec 63: col1 0xC0000000 (exp 0xC3A10000)  col2 0x00000000 (exp 0x460E0000)  MISMATCH
+RESULT   : 0 / 64 vectors bit-exact (64 mismatches), 2 dot-32 per vector
+java.lang.Exception: expected integer but got ""
+    while executing
+"format "{\"kind\":\"measurement\",\"board\":\"Arrow AXC3000 A3CY100BM16AE7S\",\"format\":\"E%dM%d\",\"nvec\":%d,\"mismatches\":%d,\"cycles\":%d,\"dut_..."
+    invoked from within
+"puts $f [format "{\"kind\":\"measurement\",\"board\":\"Arrow AXC3000 A3CY100BM16AE7S\",\"format\":\"E%dM%d\",\"nvec\":%d,\"mismatches\":%d,\"cycles\":..."

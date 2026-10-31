@@ -62,7 +62,7 @@ for {set tries 0} {$tries < 200} {incr tries} {
 }
 puts [format "STATUS   = 0x%X (bit1 done, bit2 overrun)" $st]
 if {!($st & 0x2)} { error "run did not complete" }
-set cycles [R $m 0x005]
+set cycles [expr {[R $m 0x005] & 0xFFFFFFFF}]
 puts "CYCLES   = $cycles DUT clocks from START to last result ($::NVEC vectors)"
 
 # --- compare
@@ -80,8 +80,11 @@ for {set i 0} {$i < $::NVEC} {incr i} {
 puts [format "RESULT   : %d / %d vectors bit-exact (%d mismatches), 2 dot-32 per vector" [expr {$::NVEC - $mism}] $::NVEC $mism]
 
 set f [open $result_file w]
-puts $f [format "{\"kind\":\"measurement\",\"board\":\"Arrow AXC3000 A3CY100BM16AE7S\",\"format\":\"E%dM%d\",\"nvec\":%d,\"mismatches\":%d,\"cycles\":%d,\"dut_mhz\":%.2f,\"data_file\":\"%s\",\"utc\":\"%s\",\"vectors\":[%s]}" \
-    $::E $::M $::NVEC $mism $cycles $mhz $data_file [clock format [clock seconds] -format %Y-%m-%dT%H:%M:%SZ -gmt 1] [join $out ","]]
+set json "{\"kind\":\"measurement\",\"board\":\"Arrow AXC3000 A3CY100BM16AE7S\","
+append json [format "\"format\":\"E%dM%d\",\"nvec\":%d,\"mismatches\":%d,\"cycles\":%d,\"dut_mhz\":%.2f," $::E $::M $::NVEC $mism $cycles $mhz]
+append json "\"data_file\":\"$data_file\",\"utc\":\"[clock format [clock seconds] -format %Y-%m-%dT%H:%M:%SZ -gmt 1]\","
+append json "\"vectors\":\[[join $out ","]\]}"
+puts $f $json
 close $f
 puts "wrote $result_file"
 close_service master $m

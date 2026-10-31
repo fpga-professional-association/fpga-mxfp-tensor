@@ -20,4 +20,4 @@ $Q/quartus_pgm -c "$CABLE" -m jtag -o "p;$SOF" 2>&1 | grep -E "Info \(209|Error"
 sleep 2
 echo "=== running test ==="
 cd host
-MX_DATA="$DATA" MX_RESULT="../results/$RES" "$SC" --cli --script=run_test.tcl 2>&1 | grep -vE "^\s*$" | tail -80
+MX_DATA="$DATA" MX_RESULT="../results/$RES" "$SC" --script=run_test.tcl 2>&1 | grep -vE "^\s*$" | tail -80

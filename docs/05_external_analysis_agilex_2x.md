@@ -288,8 +288,19 @@ and the Altera Agilex 2X announcement (altera.com/newsroom/agilex-2x).
 - The "exact INT32 tensor fixed-point mode" experiment (Variant B) is cheap and we can run it on
   our Agilex 3 board, which has the same tensor block with both fixed-point and floating-point
   tensor modes. Added to the plan as the first Agilex 3 experiment after the baseline port.
-- The Agilex 25/27 claims (dual dot-16, M80K, HyperFlow, product table) need checking against
-  the Altera documents once we have them. Nothing in this repo depends on them yet.
+- The Agilex 27 claims were checked against the primary Altera documents (Device Overview
+  2026.10.28, white paper WP-01358-1.0, product table Gen-1088-1.0) in
+  `reports/Agilex 2X series architecture.md`. Confirmed: two tensor columns per block, each a
+  16-element dot product, 32 INT8 or 32 "Block FP16" multipliers per block, INT32/FP32
+  accumulate; the 14-device product table (63 to 1,211 INT8 TOPS, implied ~900 MHz tensor
+  clock); M80K; HyperFlow as a full-chip extension of the Agilex 7 M-series NoC. Not confirmed
+  anywhere: FP8, FP4, INT4, MXFP, OCP MX, or any shared-exponent statement; process node; any
+  Agilex 25 number. "Block FP16" is undefined but is most likely the Agilex 5 style shared
+  exponent over INT8 mantissas, which is exactly what the paper's tensor-mode mapping needs.
+- Implication for this project: if Block FP16 on Agilex 27 is the Agilex 5 construction, the
+  paper's E2M1/E2M3 pre-alignment maps to dot-16 columns directly and a k=32 MXFP4 dot product
+  takes 2 blocks instead of 4, which is the paper's iteration-1 density without any DSP change.
+  E3M2 and MXFP8 still do not fit an 8-bit lane, so the paper's main argument stands for 2X.
 - The Agilex 5 D-series A5D160 point is a good one: the same RTL on 9,936 DSP blocks would put
   the paper's existing tensor-mode E2M1 design near 145 TFLOPS peak at 458 MHz, with no DSP
   redesign at all.
