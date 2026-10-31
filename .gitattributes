@@ -1,0 +1,3 @@
+* text=auto eol=lf
+*.ip -text
+*.qsys -text
