@@ -1,0 +1,3 @@
+[submodule "upstream/fpga-mxfp"]
+	path = upstream/fpga-mxfp
+	url = https://github.com/boutros-lab/fpga-mxfp

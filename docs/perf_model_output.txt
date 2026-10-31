@@ -1,0 +1,153 @@
+
+====================================================================================================
+Agilex 5  A5E065 (paper): 222,400 ALMs, 846 DSP blocks   [paper device; 846 DSP x 20 MAC = exactly reproduces Table V peaks]
+====================================================================================================
+format approach                                    units  ALM%  DSP%  peak@unit-fmax  peak@400 MHz
+E5M2   opt soft logic                                 50   100     0             1.7           1.3
+E5M2   packed DSP                                     21    98    40             2.1           1.6
+E5M2   fp16 vector                                    52     7    98             1.5           1.3
+E5M2   proposed DSP (iter 2/3.3)                     211    20   100            12.4          10.8
+E4M3   opt soft logic                                 67    99     0             2.3           1.7
+E4M3   packed DSP                                     45    98    85             3.3           2.3
+E4M3   fp16 vector                                    52    15    98             1.5           1.3
+E4M3   proposed DSP (iter 4)                         211    20   100            12.4          10.8
+E3M2   opt soft logic                                134   100     0             5.1           3.4
+E3M2   packed DSP                                     52    97    98             6.5           4.0
+E3M2   fp16 vector                                    52     9    98             1.5           1.3
+E3M2   proposed DSP (iter 4)                         282    12   100            16.5          14.4
+E2M3   opt soft logic                                140    99     0             5.9           3.6
+E2M3   packed DSP                                     52    46    98             5.7           2.7
+E2M3   fp16 vector                                    52     9    98             1.5           1.3
+E2M3   tensor mode                                   211    40   100            12.4          10.8
+E2M3   proposed DSP (iter 4)                         282    12   100            16.5          14.4
+E2M1   opt soft logic                                251   100     0            11.5           6.4
+E2M1   packed DSP                                     52    84    98            12.3           6.7
+E2M1   fp16 vector                                    52     5    98             1.5           1.3
+E2M1   tensor mode                                   211    19   100            12.4          10.8
+E2M1   proposed DSP (iter 4)                         423     7   100            24.8          21.7
+
+====================================================================================================
+Agilex 3  A3CY100 (owned): 33,900 ALMs, 138 DSP blocks   [ALMs approximated; -7 speed grade so fmax assumed 300 MHz; verify on board]
+====================================================================================================
+format approach                                    units  ALM%  DSP%  peak@unit-fmax  peak@300 MHz
+E5M2   opt soft logic                                  7    92     0             0.2           0.1
+E5M2   packed DSP                                      3    92    35             0.3           0.2
+E5M2   fp16 vector                                     8     8    93             0.2           0.2
+E4M3   opt soft logic                                 10    97     0             0.3           0.2
+E4M3   packed DSP                                      7   100    81             0.5           0.3
+E4M3   fp16 vector                                     8    16    93             0.2           0.2
+E3M2   opt soft logic                                 20    98     0             0.8           0.4
+E3M2   packed DSP                                      8    98    93             1.0           0.5
+E3M2   fp16 vector                                     8     9    93             0.2           0.2
+E2M3   opt soft logic                                 21    98     0             0.9           0.4
+E2M3   packed DSP                                      8    46    93             0.9           0.3
+E2M3   fp16 vector                                     8     9    93             0.2           0.2
+E2M3   tensor mode                                    34    42    99             2.0           1.3
+E2M1   opt soft logic                                 38    99     0             1.7           0.7
+E2M1   packed DSP                                      8    85    93             1.9           0.8
+E2M1   fp16 vector                                     8     5    93             0.2           0.2
+E2M1   tensor mode                                    34    20    99             2.0           1.3
+
+====================================================================================================
+Agilex 7  AGF027: 912,800 ALMs, 8,528 DSP blocks   [no tensor mode; 18x19 fixed fmax 771 MHz (-2V) but fabric-bound designs ~450]
+====================================================================================================
+format approach                                    units  ALM%  DSP%  peak@unit-fmax  peak@450 MHz
+E5M2   opt soft logic                                205   100     0             6.8           5.9
+E5M2   packed DSP                                     87    99    16             8.8           7.5
+E5M2   fp16 vector                                   533    19   100            15.7          15.4
+E4M3   opt soft logic                                277   100     0             9.6           8.0
+E4M3   packed DSP                                    188   100    35            14.0          10.8
+E4M3   fp16 vector                                   533    39   100            15.5          15.4
+E3M2   opt soft logic                                550   100     0            21.0          15.8
+E3M2   packed DSP                                    219   100    41            27.5          18.9
+E3M2   fp16 vector                                   533    22   100            15.5          15.4
+E2M3   opt soft logic                                578   100     0            24.3          16.6
+E2M3   packed DSP                                    465   100    87            50.6          26.8
+E2M3   fp16 vector                                   533    21   100            15.2          15.4
+E2M3   pre-aligned 9x9 sum-of-4 (our idea, est.)    1066    35   100            40.9          30.7
+E2M1   opt soft logic                               1031   100     0            47.0          29.7
+E2M1   packed DSP                                    254   100    48            60.1          36.6
+E2M1   fp16 vector                                   533    13   100            15.7          15.4
+E2M1   pre-aligned 9x9 sum-of-4 (our idea, est.)    1066    30   100            40.9          30.7
+
+  Best two-approach mixes (fill ALMs with one, leftover DSPs with another), at 450 MHz:
+    E2M1:   51.4 TFLOPS  = 718 x [opt soft logic] + 1066 x [pre-aligned 9x9 sum-of-4 (our idea, est.)]
+    E2M3:   41.5 TFLOPS  = 375 x [opt soft logic] + 1066 x [pre-aligned 9x9 sum-of-4 (our idea, est.)]
+    E4M3:   20.2 TFLOPS  = 170 x [opt soft logic] + 533 x [fp16 vector]
+
+====================================================================================================
+Agilex 7  AGM039 (HBM2e): 1,305,600 ALMs, 12,300 DSP blocks   [no tensor mode; HBM2e 32 GB @ 820 GB/s makes this the LLM candidate]
+====================================================================================================
+format approach                                    units  ALM%  DSP%  peak@unit-fmax  peak@450 MHz
+E5M2   opt soft logic                                294   100     0             9.7           8.5
+E5M2   packed DSP                                    125   100    16            12.6          10.8
+E5M2   fp16 vector                                   768    19   100            22.6          22.1
+E4M3   opt soft logic                                397   100     0            13.7          11.4
+E4M3   packed DSP                                    269   100    35            20.0          15.5
+E4M3   fp16 vector                                   768    39   100            22.4          22.1
+E3M2   opt soft logic                                787   100     0            30.1          22.7
+E3M2   packed DSP                                    314   100    41            39.4          27.1
+E3M2   fp16 vector                                   768    22   100            22.4          22.1
+E2M3   opt soft logic                                826   100     0            34.8          23.8
+E2M3   packed DSP                                    665   100    87            72.4          38.3
+E2M3   fp16 vector                                   768    22   100            21.9          22.1
+E2M3   pre-aligned 9x9 sum-of-4 (our idea, est.)    1537    35   100            59.0          44.3
+E2M1   opt soft logic                               1475   100     0            67.3          42.5
+E2M1   packed DSP                                    363   100    47            86.0          52.3
+E2M1   fp16 vector                                   768    13   100            22.6          22.1
+E2M1   pre-aligned 9x9 sum-of-4 (our idea, est.)    1537    31   100            59.0          44.3
+
+  Best two-approach mixes (fill ALMs with one, leftover DSPs with another), at 450 MHz:
+    E2M1:   73.7 TFLOPS  = 1023 x [opt soft logic] + 1537 x [pre-aligned 9x9 sum-of-4 (our idea, est.)]
+    E2M3:   59.6 TFLOPS  = 534 x [opt soft logic] + 1537 x [pre-aligned 9x9 sum-of-4 (our idea, est.)]
+    E4M3:   29.1 TFLOPS  = 242 x [opt soft logic] + 768 x [fp16 vector]
+
+====================================================================================================
+LLM fit: MXFP4 weights (4.25 b/param), batch-1 decode is weight-bandwidth bound
+====================================================================================================
+model                                  weights GB active GB/tok   fits / est. batch-1 tok/s per memory system
+gpt-oss-20b (native MXFP4 MoE)               13.7          2.20
+    Agilex 7 AGM039 HBM2e (1 device)                             FITS       261 tok/s
+    Agilex 7 AGM039 HBM2e (2 devices)                            FITS       485 tok/s
+    Agilex 7 AGM039 HBM2e + 2ch DDR5-5600 (experts in DDR)       FITS        31 tok/s
+    Agilex 5 A5E065 dev kit, LPDDR5 (board dependent)            no   
+    Agilex 3 AXC3000 HyperRAM                                    no   
+    AMD MI355X HBM3E (1 GPU, reference)                          FITS      2910 tok/s
+gpt-oss-120b (native MXFP4 MoE)              65.3          3.12
+    Agilex 7 AGM039 HBM2e (1 device)                             no   
+    Agilex 7 AGM039 HBM2e (2 devices)                            no   
+    Agilex 7 AGM039 HBM2e + 2ch DDR5-5600 (experts in DDR)       FITS        22 tok/s
+    Agilex 5 A5E065 dev kit, LPDDR5 (board dependent)            no   
+    Agilex 3 AXC3000 HyperRAM                                    no   
+    AMD MI355X HBM3E (1 GPU, reference)                          FITS      2054 tok/s
+Llama-3.1-8B -> MXFP4                         4.3          4.91
+    Agilex 7 AGM039 HBM2e (1 device)                             FITS       117 tok/s
+    Agilex 7 AGM039 HBM2e (2 devices)                            FITS       217 tok/s
+    Agilex 7 AGM039 HBM2e + 2ch DDR5-5600 (experts in DDR)       FITS        14 tok/s
+    Agilex 5 A5E065 dev kit, LPDDR5 (board dependent)            FITS         7 tok/s
+    Agilex 3 AXC3000 HyperRAM                                    no   
+    AMD MI355X HBM3E (1 GPU, reference)                          FITS      1305 tok/s
+Qwen3-30B-A3B -> MXFP4                       16.2          2.02
+    Agilex 7 AGM039 HBM2e (1 device)                             FITS       285 tok/s
+    Agilex 7 AGM039 HBM2e (2 devices)                            FITS       529 tok/s
+    Agilex 7 AGM039 HBM2e + 2ch DDR5-5600 (experts in DDR)       FITS        33 tok/s
+    Agilex 5 A5E065 dev kit, LPDDR5 (board dependent)            no   
+    Agilex 3 AXC3000 HyperRAM                                    no   
+    AMD MI355X HBM3E (1 GPU, reference)                          FITS      3174 tok/s
+Qwen3-32B -> MXFP4                           17.4         20.04
+    Agilex 7 AGM039 HBM2e (1 device)                             FITS        29 tok/s
+    Agilex 7 AGM039 HBM2e (2 devices)                            FITS        53 tok/s
+    Agilex 7 AGM039 HBM2e + 2ch DDR5-5600 (experts in DDR)       FITS         3 tok/s
+    Agilex 5 A5E065 dev kit, LPDDR5 (board dependent)            no   
+    Agilex 3 AXC3000 HyperRAM                                    no   
+    AMD MI355X HBM3E (1 GPU, reference)                          FITS       319 tok/s
+Llama-3.3-70B -> MXFP4                       37.5         43.13
+    Agilex 7 AGM039 HBM2e (1 device)                             no   
+    Agilex 7 AGM039 HBM2e (2 devices)                            FITS        25 tok/s
+    Agilex 7 AGM039 HBM2e + 2ch DDR5-5600 (experts in DDR)       FITS         2 tok/s
+    Agilex 5 A5E065 dev kit, LPDDR5 (board dependent)            no   
+    Agilex 3 AXC3000 HyperRAM                                    no   
+    AMD MI355X HBM3E (1 GPU, reference)                          FITS       148 tok/s
+
+Decode compute need is tiny: e.g. gpt-oss-20b at 200 tok/s = 2*3.6e9*200 = 1.4 TFLOPS.
+Prefill is compute bound: 1,000-token prompt on gpt-oss-20b = 7.2 TFLOP -> ~0.25 s at a sustained 30 TFLOPS, ~1.2 s at 6 TFLOPS.

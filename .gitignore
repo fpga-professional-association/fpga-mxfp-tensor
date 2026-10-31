@@ -1,0 +1,35 @@
+# Quartus
+*.qws
+db/
+incremental_db/
+qdb/
+tmp-clearbox/
+output_files/
+*.rpt.bak
+*.sof
+*.pof
+*.rbf
+*.jic
+*.sld
+*.qarlog
+*.qpf.bak
+
+# simulation
+work/
+transcript
+*.wlf
+vsim.wlf
+modelsim.ini.bak
+obj_dir/
+*.vcd
+*.fst
+
+# python
+__pycache__/
+*.pyc
+.venv/
+sa_venv/
+
+# OS
+Thumbs.db
+.DS_Store
