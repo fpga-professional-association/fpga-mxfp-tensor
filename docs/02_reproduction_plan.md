@@ -21,6 +21,7 @@ Status legend: [ ] not started, [~] in progress, [x] done. Keep this file curren
 - [x] Directory, git, GitHub remote, paper moved, upstream vendored as submodule.
 - [x] Paper review (`01_paper_review.md`).
 - [x] Peak-throughput and LLM-fit model (`scripts/perf_model.py`) that reproduces Table V.
+- [x] Agilex 2X deep research: `reports/Agilex 2X series architecture.md` (notes in `research_notes/`).
 - [ ] Install Questa Intel FPGA Starter Edition 26.1 and point `MODELSIM` env at it.
 - [ ] `sudo apt install verilator` in WSL. Try Verilator on `aitb_asic/rtl` (SystemVerilog) with
       the FloPoCo VHDL blocks replaced by SV equivalents (see Phase 3).
@@ -29,7 +30,10 @@ Status legend: [ ] not started, [~] in progress, [x] done. Keep this file curren
 
 Target A5EC065BB32AE4S, same part as the paper, Quartus 26.1 instead of 25.3.
 
-1. [ ] Run `characterization/Makefile` with `-j2` and whatever the Makefile expects for the
+1. [~] Run `characterization/Makefile` with `-j2`. Done for the tensor-mode designs (E2M1, E2M3)
+       on A5EC065BB32AE4S via `agilex3/char/run_aitb.sh`: 207/4/458 and 417/4/458 vs the paper's
+       198/4/458 and 420/4/458. Soft-logic baselines and the packed/fp16 runs on Agilex 5 remain.
+       Original step: run `characterization/Makefile` with `-j2` and whatever the Makefile expects for the
        Quartus path. Fix Windows path issues or run under WSL with the Linux Quartus if easier.
 2. [ ] Compare `base.csv`, `base_opt.csv`, `packed_base.csv`, `fp16_base.csv`, `aitb_base.csv`
        to Table I. Expect ALM counts within a few percent and fmax within 5 to 10% (26.1 vs 25.3).
@@ -43,18 +47,19 @@ Exit criterion: our own Table I and Fig. 3, with differences explained.
 
 The paper never runs on a board. We can, for the formats the baseline tensor mode supports.
 
-1. [ ] Retarget `characterization/ai_tensor_block` (E2M1, E2M3) and `packed_multiplier` (E3M2,
-       E4M3) to A3CY100BM16AE7S. Check that the Agilex 3 tensor DSP IP has the same ports
+1. [x] Retarget `characterization/ai_tensor_block` (E2M1, E2M3) and `packed_multiplier` (E3M2,
+       E4M3) to A3CY100BM16AE7S. All 12 DSP-based designs fit within 3% of the paper's ALMs; see
+       `06_agilex3_results.md`. Check that the Agilex 3 tensor DSP IP has the same ports
        (104 in, 64 out, 64 chain) as Agilex 5. Our earlier CoreDLA project in
        `D:\altera_demo\agilex_mlperf_demo` already has the board constraints and a JTAG host path.
 2. [ ] Scale `systolic_array/rtl/sys_array_aitb.sv` down (N = 2..6) to fit 138 DSPs and ~34K ALMs.
-3. [ ] Add a JTAG Avalon or UART loader for weights and activations, plus a result readback.
-       Reuse the test vector generator in `testbench/`.
-4. [ ] Measure fmax, utilization, and bit-exactness against a Python MX reference (write one
-       following the OCP MX spec v1.0 dot-product definition). The paper's Table I fmax for the
-       tensor mode is 458 MHz on Agilex 5 -4; expect roughly 300 MHz on our -7 Agilex 3 part.
-5. [ ] Report measured TFLOPS. The model predicts about 1.3 TFLOPS peak for E2M1 at 300 MHz.
-       That is small, but it is a real, measured MXFP4 number on silicon, which the paper lacks.
+3. [x] JTAG Avalon harness (`agilex3/board`), exact MX golden model, System Console driver.
+4. [x] E2M1 bit-exact on silicon, 64/64 vectors, 240.1 MHz measured, latency 11 cycles.
+       Tensor-mode restricted fmax on the -7 part is 342.94 MHz.
+5. [x] Device-fill peak at 343 MHz: 1.49 TFLOPS MXFP4. One unit measured at 30.7 GFLOPS.
+6. [ ] E2M3 on silicon (build in progress).
+7. [ ] Register the harness RAM reads (it uses 19K ALMs as flops today) and sweep the DUT PLL
+       to find the real on-silicon fmax of the dot unit.
 
 Exit criterion: an MXFP4 systolic array running on the AXC3000 with a measured tok/s-style
 number for a toy matmul and a bit-exact check against the MX reference.

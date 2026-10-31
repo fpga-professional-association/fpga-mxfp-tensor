@@ -18,11 +18,23 @@ an Agilex 3 board we own, and extend the work toward Agilex 7 and MXFP4 LLM infe
 | `docs/02_reproduction_plan.md` | Phased plan with status checkboxes. Phase 0 done. |
 | `docs/03_agilex7_and_performance.md` | Why Agilex 7 has no tensor mode, what you can get instead, TFLOPS estimates per device. |
 | `docs/04_mxfp4_model_fit.md` | Which models fit in MXFP4 on which Agilex part, and estimated decode rates. |
+| `docs/05_external_analysis_agilex_2x.md` | A separately produced deep-research note on Agilex 5/7/25/27 supplied by the user, with our verification notes. |
+| `docs/06_agilex3_results.md` | Measured results: the paper's designs on Agilex 3 silicon (AXC3000), plus the Agilex 5 reproduction under Quartus 26.1. |
 | `docs/perf_model_output.txt` | Output of the model below at the time of writing. |
+| `reports/Agilex 2X series architecture.md` | Deep-research report on Altera's Agilex 2X (27 and 25) from the 28 Oct 2026 launch documents. |
+| `agilex3/char/` | Scripts that retarget the paper's characterization designs to any part; results CSVs. |
+| `agilex3/board/` | AXC3000 bitstream: Platform Designer shell, JTAG test harness, golden model, System Console driver, measured results. |
 | `scripts/perf_model.py` | Peak-throughput and LLM-fit calculator. Reproduces Table V of the paper exactly. |
 | `upstream/fpga-mxfp` | Submodule: github.com/boutros-lab/fpga-mxfp (authors' RTL, scripts, ASIC reports). |
 
 ## Headline findings so far
+
+- Measured on silicon: the paper's E2M1 tensor-mode dot product is bit-exact on an Agilex 3
+  A3CY100 (64/64 vectors, 240 MHz, 11-cycle latency). The paper itself never ran on hardware.
+- All 12 of the paper's DSP-based designs fit Agilex 3 within 3% of the paper's Agilex 5 ALM
+  counts; the Agilex 5 numbers reproduce under Quartus 26.1.
+- Agilex 27 (announced 28 Oct 2026) has a second-generation tensor block with two 16-element
+  columns (32 INT8 multipliers), but Altera publishes no FP8, FP4 or MXFP support for it.
 
 - The paper's peak numbers reproduce from first principles: 846 DSP blocks x 20 MACs x 458 MHz.
 - Agilex 7 has no tensor mode. The proposed block cannot be used there, but the big Agilex 7

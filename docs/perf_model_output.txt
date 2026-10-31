@@ -27,26 +27,26 @@ E2M1   tensor mode                                   211    19   100            
 E2M1   proposed DSP (iter 4)                         423     7   100            24.8          21.7
 
 ====================================================================================================
-Agilex 3  A3CY100 (owned): 33,900 ALMs, 138 DSP blocks   [ALMs approximated; -7 speed grade so fmax assumed 300 MHz; verify on board]
+Agilex 3  A3CY100 (owned): 34,000 ALMs, 138 DSP blocks   [34,000 ALMs per Quartus; tensor DSP restricted fmax 343 MHz on -7; harness measured at 240 MHz]
 ====================================================================================================
-format approach                                    units  ALM%  DSP%  peak@unit-fmax  peak@300 MHz
-E5M2   opt soft logic                                  7    92     0             0.2           0.1
-E5M2   packed DSP                                      3    92    35             0.3           0.2
-E5M2   fp16 vector                                     8     8    93             0.2           0.2
+format approach                                    units  ALM%  DSP%  peak@unit-fmax  peak@240 MHz
+E5M2   opt soft logic                                  7    91     0             0.2           0.1
+E5M2   packed DSP                                      3    92    35             0.3           0.1
+E5M2   fp16 vector                                     8     8    93             0.2           0.1
 E4M3   opt soft logic                                 10    97     0             0.3           0.2
-E4M3   packed DSP                                      7   100    81             0.5           0.3
-E4M3   fp16 vector                                     8    16    93             0.2           0.2
-E3M2   opt soft logic                                 20    98     0             0.8           0.4
-E3M2   packed DSP                                      8    98    93             1.0           0.5
-E3M2   fp16 vector                                     8     9    93             0.2           0.2
-E2M3   opt soft logic                                 21    98     0             0.9           0.4
-E2M3   packed DSP                                      8    46    93             0.9           0.3
-E2M3   fp16 vector                                     8     9    93             0.2           0.2
-E2M3   tensor mode                                    34    42    99             2.0           1.3
-E2M1   opt soft logic                                 38    99     0             1.7           0.7
-E2M1   packed DSP                                      8    85    93             1.9           0.8
-E2M1   fp16 vector                                     8     5    93             0.2           0.2
-E2M1   tensor mode                                    34    20    99             2.0           1.3
+E4M3   packed DSP                                      7   100    81             0.5           0.2
+E4M3   fp16 vector                                     8    16    93             0.2           0.1
+E3M2   opt soft logic                                 20    97     0             0.8           0.3
+E3M2   packed DSP                                      8    98    93             1.0           0.4
+E3M2   fp16 vector                                     8     9    93             0.2           0.1
+E2M3   opt soft logic                                 21    98     0             0.9           0.3
+E2M3   packed DSP                                      8    46    93             0.9           0.2
+E2M3   fp16 vector                                     8     9    93             0.2           0.1
+E2M3   tensor mode                                    34    42    99             2.0           1.0
+E2M1   opt soft logic                                 38    99     0             1.7           0.6
+E2M1   packed DSP                                      8    84    93             1.9           0.6
+E2M1   fp16 vector                                     8     5    93             0.2           0.1
+E2M1   tensor mode                                    34    20    99             2.0           1.0
 
 ====================================================================================================
 Agilex 7  AGF027: 912,800 ALMs, 8,528 DSP blocks   [no tensor mode; 18x19 fixed fmax 771 MHz (-2V) but fabric-bound designs ~450]

@@ -37,8 +37,8 @@ DEVICES = [
            "paper device; 846 DSP x 20 MAC = exactly reproduces Table V peaks"),
     # Agilex 3 A3CY100 on the Arrow AXC3000 we own: 138 DSP blocks (276 18x19), ~100K LE.
     # ALM count approximated as LE/2.95 (Agilex LE:ALM ratio); verify in Quartus.
-    Device("Agilex 3  A3CY100 (owned)",  33_900,   138, True,  300,
-           "ALMs approximated; -7 speed grade so fmax assumed 300 MHz; verify on board"),
+    Device("Agilex 3  A3CY100 (owned)",  34_000,   138, True,  240,
+           "34,000 ALMs per Quartus; tensor DSP restricted fmax 343 MHz on -7; harness measured at 240 MHz"),
     # Agilex 7 F-series 027: 912,800 ALMs, 8,528 DSP blocks. Source: F-series product table.
     Device("Agilex 7  AGF027",           912_800, 8_528, False, 450,
            "no tensor mode; 18x19 fixed fmax 771 MHz (-2V) but fabric-bound designs ~450"),
