@@ -38,5 +38,5 @@ set_global_assignment -name SDC_FILE top.sdc
 
 # MXFP format of this build (E2M1 = MXFP4). Override with: quartus_sh --set "set_parameter -name E 2"
 set_parameter -name E 2
-set_parameter -name M 1
+set_parameter -name M 3
 set_parameter -name PIPE 1

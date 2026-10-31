@@ -1,0 +1,335 @@
+----------------
+; Command Info ;
+----------------
+Report Timing: Found 4 setup paths (4 violated).  Worst case slack is -1.853 
+
+Tcl Command:
+    report_timing -setup -file paths_setup.txt -to_clock [get_clocks {u0|pll|iopll_inst_outclk1}] -npaths 4 -detail path_only
+
+Options:
+    -to_clock [get_clocks {u0|pll|iopll_inst_outclk1}] 
+    -setup 
+    -npaths 4 
+    -detail path_only 
+    -file {paths_setup.txt} 
+
+Snapshot:
+    final
+
+Delay Models:
+    Slow fix6 100C Model
+    Slow fix6 0C Model
+    Slow fix6a 0C Model
+    Fast fix6 0C Model
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Summary of Paths                                                                                                                                                                                                                                      ;
++--------+------------------------------------------------+-----------------------------------------+--------------------------------------------+---------------------------+--------------+------------+------------+---------------------------------+
+; Slack  ; From Node                                      ; To Node                                 ; Launch Clock                               ; Latch Clock               ; Relationship ; Clock Skew ; Data Delay ; Worst-Case Operating Conditions ;
++--------+------------------------------------------------+-----------------------------------------+--------------------------------------------+---------------------------+--------------+------------+------------+---------------------------------+
+; -1.853 ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg ; harness|s1_idx[0]~_Duplicate_2DUPLICATE ; u0|pll|iopll_inst|tennm_ph2_iopll|ref_clk0 ; u0|pll|iopll_inst_outclk1 ; 0.833        ; 1.741      ; 4.568      ; Slow fix6a 0C Model             ;
+; -1.853 ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg ; harness|s1_idx[0]~_Duplicate_2          ; u0|pll|iopll_inst|tennm_ph2_iopll|ref_clk0 ; u0|pll|iopll_inst_outclk1 ; 0.833        ; 1.741      ; 4.568      ; Slow fix6a 0C Model             ;
+; -1.852 ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg ; harness|s1_idx[0]~_DuplicateDUPLICATE   ; u0|pll|iopll_inst|tennm_ph2_iopll|ref_clk0 ; u0|pll|iopll_inst_outclk1 ; 0.833        ; 1.712      ; 4.394      ; Slow fix6a 0C Model             ;
+; -1.852 ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg ; harness|s1_idx[0]~_Duplicate            ; u0|pll|iopll_inst|tennm_ph2_iopll|ref_clk0 ; u0|pll|iopll_inst_outclk1 ; 0.833        ; 1.712      ; 4.394      ; Slow fix6a 0C Model             ;
++--------+------------------------------------------------+-----------------------------------------+--------------------------------------------+---------------------------+--------------+------------+------------+---------------------------------+
+
+Path #1: Setup slack is -1.853 (VIOLATED)
+===============================================================================
++----------------------------------------------------------------------------------+
+; Path Summary                                                                     ;
++---------------------------------+------------------------------------------------+
+; Property                        ; Value                                          ;
++---------------------------------+------------------------------------------------+
+; From Node                       ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg ;
+; To Node                         ; harness|s1_idx[0]~_Duplicate_2DUPLICATE        ;
+; Launch Clock                    ; u0|pll|iopll_inst|tennm_ph2_iopll|ref_clk0     ;
+; Latch Clock                     ; u0|pll|iopll_inst_outclk1                      ;
+; SDC Exception                   ; No SDC Exception on Path                       ;
+; Data Arrival Time               ; 128.669                                        ;
+; Data Required Time              ; 126.816                                        ;
+; Slack                           ; -1.853 (VIOLATED)                              ;
+; Worst-Case Operating Conditions ; Slow fix6a 0C Model                            ;
++---------------------------------+------------------------------------------------+
+
++--------------------------------------------------------------------------------------+
+; Statistics                                                                           ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+; Property                  ; Value ; Count ; Total Delay ; % of Total ; Min   ; Max   ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+; Setup Relationship        ; 0.833 ;       ;             ;            ;       ;       ;
+; Clock Skew                ; 1.741 ;       ;             ;            ;       ;       ;
+; Data Delay                ; 4.568 ;       ;             ;            ;       ;       ;
+; Number of Logic Levels    ;       ; 1     ;             ;            ;       ;       ;
+; Physical Delays           ;       ;       ;             ;            ;       ;       ;
+;  Arrival Path             ;       ;       ;             ;            ;       ;       ;
+;   Clock                   ;       ;       ;             ;            ;       ;       ;
+;    Clock Network (Lumped) ;       ; 1     ; 4.101       ; 100        ; 4.101 ; 4.101 ;
+;   Data                    ;       ;       ;             ;            ;       ;       ;
+;    IC                     ;       ; 2     ; 2.760       ; 60         ; 0.471 ; 2.289 ;
+;    Cell                   ;       ; 4     ; 1.018       ; 22         ; 0.000 ; 0.812 ;
+;    uTco                   ;       ; 1     ; 0.790       ; 17         ; 0.790 ; 0.790 ;
+;  Required Path            ;       ;       ;             ;            ;       ;       ;
+;   Clock                   ;       ;       ;             ;            ;       ;       ;
+;    Clock Network (Lumped) ;       ; 1     ; 5.519       ; 100        ; 5.519 ; 5.519 ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+Note: Negative delays are omitted from totals when calculating percentages
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Data Arrival Path                                                                                                                                                     ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+; Total     ; Incr    ; RF ; Type ; Fanout ; Location           ; Element Type       ; Element                                                                          ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+; 120.000   ; 120.000 ;    ;      ;        ;                    ;                    ; launch edge time                                                                 ;
+; 124.101   ; 4.101   ;    ;      ;        ;                    ;                    ; clock path                                                                       ;
+;   124.101 ;   4.101 ; R  ;      ;        ;                    ;                    ; clock network delay                                                              ;
+;   124.101 ;   0.000 ;    ;      ; 1      ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg                                   ;
+; 128.669   ; 4.568   ;    ;      ;        ;                    ;                    ; data path                                                                        ;
+;   124.891 ;   0.790 ; RR ; uTco ; 1      ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll|lock                                           ;
+;   125.703 ;   0.812 ; RR ; CELL ; 637    ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll~io96/s2_0_39__vio_mlab_core_periphery__p2c[10] ;
+;   127.992 ;   2.289 ; RR ; IC   ; 1      ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN|datae                                                     ;
+;   128.058 ;   0.066 ; RF ; CELL ; 4      ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN|combout                                                   ;
+;   128.198 ;   0.140 ; FR ; CELL ; 2      ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN~cw_la_lab/laboutt[4]                                      ;
+;   128.669 ;   0.471 ; RR ; IC   ; 1      ; FF_X66_Y23_N23     ; ALM Register       ; harness|s1_idx[0]~_Duplicate_2DUPLICATE|d                                        ;
+;   128.669 ;   0.000 ; RR ; CELL ; 1      ; FF_X66_Y23_N23     ; ALM Register       ; harness|s1_idx[0]~_Duplicate_2DUPLICATE                                          ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+
++---------------------------------------------------------------------------------------------------------------------+
+; Data Required Path                                                                                                  ;
++-----------+----------+----+------+--------+----------------+--------------+-----------------------------------------+
+; Total     ; Incr     ; RF ; Type ; Fanout ; Location       ; Element Type ; Element                                 ;
++-----------+----------+----+------+--------+----------------+--------------+-----------------------------------------+
+; 120.833   ; 120.833  ;    ;      ;        ;                ;              ; latch edge time                         ;
+; 126.675   ; 5.842    ;    ;      ;        ;                ;              ; clock path                              ;
+;   126.352 ;   5.519  ; R  ;      ;        ;                ;              ; clock network delay                     ;
+;   126.730 ;   0.378  ;    ;      ;        ;                ;              ; clock pessimism removed                 ;
+;   126.675 ;   -0.055 ;    ;      ;        ;                ;              ; advanced clock effects                  ;
+; 126.625   ; -0.050   ;    ;      ;        ;                ;              ; clock uncertainty                       ;
+; 126.816   ; 0.191    ;    ; uTsu ; 1      ; FF_X66_Y23_N23 ; ALM Register ; harness|s1_idx[0]~_Duplicate_2DUPLICATE ;
++-----------+----------+----+------+--------+----------------+--------------+-----------------------------------------+
+
+
+Path #2: Setup slack is -1.853 (VIOLATED)
+===============================================================================
++----------------------------------------------------------------------------------+
+; Path Summary                                                                     ;
++---------------------------------+------------------------------------------------+
+; Property                        ; Value                                          ;
++---------------------------------+------------------------------------------------+
+; From Node                       ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg ;
+; To Node                         ; harness|s1_idx[0]~_Duplicate_2                 ;
+; Launch Clock                    ; u0|pll|iopll_inst|tennm_ph2_iopll|ref_clk0     ;
+; Latch Clock                     ; u0|pll|iopll_inst_outclk1                      ;
+; SDC Exception                   ; No SDC Exception on Path                       ;
+; Data Arrival Time               ; 128.669                                        ;
+; Data Required Time              ; 126.816                                        ;
+; Slack                           ; -1.853 (VIOLATED)                              ;
+; Worst-Case Operating Conditions ; Slow fix6a 0C Model                            ;
++---------------------------------+------------------------------------------------+
+
++--------------------------------------------------------------------------------------+
+; Statistics                                                                           ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+; Property                  ; Value ; Count ; Total Delay ; % of Total ; Min   ; Max   ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+; Setup Relationship        ; 0.833 ;       ;             ;            ;       ;       ;
+; Clock Skew                ; 1.741 ;       ;             ;            ;       ;       ;
+; Data Delay                ; 4.568 ;       ;             ;            ;       ;       ;
+; Number of Logic Levels    ;       ; 1     ;             ;            ;       ;       ;
+; Physical Delays           ;       ;       ;             ;            ;       ;       ;
+;  Arrival Path             ;       ;       ;             ;            ;       ;       ;
+;   Clock                   ;       ;       ;             ;            ;       ;       ;
+;    Clock Network (Lumped) ;       ; 1     ; 4.101       ; 100        ; 4.101 ; 4.101 ;
+;   Data                    ;       ;       ;             ;            ;       ;       ;
+;    IC                     ;       ; 2     ; 2.760       ; 60         ; 0.471 ; 2.289 ;
+;    Cell                   ;       ; 4     ; 1.018       ; 22         ; 0.000 ; 0.812 ;
+;    uTco                   ;       ; 1     ; 0.790       ; 17         ; 0.790 ; 0.790 ;
+;  Required Path            ;       ;       ;             ;            ;       ;       ;
+;   Clock                   ;       ;       ;             ;            ;       ;       ;
+;    Clock Network (Lumped) ;       ; 1     ; 5.519       ; 100        ; 5.519 ; 5.519 ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+Note: Negative delays are omitted from totals when calculating percentages
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Data Arrival Path                                                                                                                                                     ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+; Total     ; Incr    ; RF ; Type ; Fanout ; Location           ; Element Type       ; Element                                                                          ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+; 120.000   ; 120.000 ;    ;      ;        ;                    ;                    ; launch edge time                                                                 ;
+; 124.101   ; 4.101   ;    ;      ;        ;                    ;                    ; clock path                                                                       ;
+;   124.101 ;   4.101 ; R  ;      ;        ;                    ;                    ; clock network delay                                                              ;
+;   124.101 ;   0.000 ;    ;      ; 1      ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg                                   ;
+; 128.669   ; 4.568   ;    ;      ;        ;                    ;                    ; data path                                                                        ;
+;   124.891 ;   0.790 ; RR ; uTco ; 1      ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll|lock                                           ;
+;   125.703 ;   0.812 ; RR ; CELL ; 637    ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll~io96/s2_0_39__vio_mlab_core_periphery__p2c[10] ;
+;   127.992 ;   2.289 ; RR ; IC   ; 1      ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN|datae                                                     ;
+;   128.058 ;   0.066 ; RF ; CELL ; 4      ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN|combout                                                   ;
+;   128.198 ;   0.140 ; FR ; CELL ; 2      ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN~cw_la_lab/laboutt[4]                                      ;
+;   128.669 ;   0.471 ; RR ; IC   ; 1      ; FF_X66_Y23_N22     ; ALM Register       ; harness|s1_idx[0]~_Duplicate_2|d                                                 ;
+;   128.669 ;   0.000 ; RR ; CELL ; 1      ; FF_X66_Y23_N22     ; ALM Register       ; harness|s1_idx[0]~_Duplicate_2                                                   ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+
++------------------------------------------------------------------------------------------------------------+
+; Data Required Path                                                                                         ;
++-----------+----------+----+------+--------+----------------+--------------+--------------------------------+
+; Total     ; Incr     ; RF ; Type ; Fanout ; Location       ; Element Type ; Element                        ;
++-----------+----------+----+------+--------+----------------+--------------+--------------------------------+
+; 120.833   ; 120.833  ;    ;      ;        ;                ;              ; latch edge time                ;
+; 126.675   ; 5.842    ;    ;      ;        ;                ;              ; clock path                     ;
+;   126.352 ;   5.519  ; R  ;      ;        ;                ;              ; clock network delay            ;
+;   126.730 ;   0.378  ;    ;      ;        ;                ;              ; clock pessimism removed        ;
+;   126.675 ;   -0.055 ;    ;      ;        ;                ;              ; advanced clock effects         ;
+; 126.625   ; -0.050   ;    ;      ;        ;                ;              ; clock uncertainty              ;
+; 126.816   ; 0.191    ;    ; uTsu ; 1      ; FF_X66_Y23_N22 ; ALM Register ; harness|s1_idx[0]~_Duplicate_2 ;
++-----------+----------+----+------+--------+----------------+--------------+--------------------------------+
+
+
+Path #3: Setup slack is -1.852 (VIOLATED)
+===============================================================================
++----------------------------------------------------------------------------------+
+; Path Summary                                                                     ;
++---------------------------------+------------------------------------------------+
+; Property                        ; Value                                          ;
++---------------------------------+------------------------------------------------+
+; From Node                       ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg ;
+; To Node                         ; harness|s1_idx[0]~_DuplicateDUPLICATE          ;
+; Launch Clock                    ; u0|pll|iopll_inst|tennm_ph2_iopll|ref_clk0     ;
+; Latch Clock                     ; u0|pll|iopll_inst_outclk1                      ;
+; SDC Exception                   ; No SDC Exception on Path                       ;
+; Data Arrival Time               ; 128.495                                        ;
+; Data Required Time              ; 126.643                                        ;
+; Slack                           ; -1.852 (VIOLATED)                              ;
+; Worst-Case Operating Conditions ; Slow fix6a 0C Model                            ;
++---------------------------------+------------------------------------------------+
+
++--------------------------------------------------------------------------------------+
+; Statistics                                                                           ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+; Property                  ; Value ; Count ; Total Delay ; % of Total ; Min   ; Max   ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+; Setup Relationship        ; 0.833 ;       ;             ;            ;       ;       ;
+; Clock Skew                ; 1.712 ;       ;             ;            ;       ;       ;
+; Data Delay                ; 4.394 ;       ;             ;            ;       ;       ;
+; Number of Logic Levels    ;       ; 1     ;             ;            ;       ;       ;
+; Physical Delays           ;       ;       ;             ;            ;       ;       ;
+;  Arrival Path             ;       ;       ;             ;            ;       ;       ;
+;   Clock                   ;       ;       ;             ;            ;       ;       ;
+;    Clock Network (Lumped) ;       ; 1     ; 4.101       ; 100        ; 4.101 ; 4.101 ;
+;   Data                    ;       ;       ;             ;            ;       ;       ;
+;    IC                     ;       ; 2     ; 2.684       ; 61         ; 0.395 ; 2.289 ;
+;    Cell                   ;       ; 4     ; 0.920       ; 21         ; 0.000 ; 0.812 ;
+;    uTco                   ;       ; 1     ; 0.790       ; 18         ; 0.790 ; 0.790 ;
+;  Required Path            ;       ;       ;             ;            ;       ;       ;
+;   Clock                   ;       ;       ;             ;            ;       ;       ;
+;    Clock Network (Lumped) ;       ; 1     ; 5.489       ; 100        ; 5.489 ; 5.489 ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+Note: Negative delays are omitted from totals when calculating percentages
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Data Arrival Path                                                                                                                                                     ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+; Total     ; Incr    ; RF ; Type ; Fanout ; Location           ; Element Type       ; Element                                                                          ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+; 120.000   ; 120.000 ;    ;      ;        ;                    ;                    ; launch edge time                                                                 ;
+; 124.101   ; 4.101   ;    ;      ;        ;                    ;                    ; clock path                                                                       ;
+;   124.101 ;   4.101 ; R  ;      ;        ;                    ;                    ; clock network delay                                                              ;
+;   124.101 ;   0.000 ;    ;      ; 1      ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg                                   ;
+; 128.495   ; 4.394   ;    ;      ;        ;                    ;                    ; data path                                                                        ;
+;   124.891 ;   0.790 ; RR ; uTco ; 1      ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll|lock                                           ;
+;   125.703 ;   0.812 ; RR ; CELL ; 637    ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll~io96/s2_0_39__vio_mlab_core_periphery__p2c[10] ;
+;   127.992 ;   2.289 ; RR ; IC   ; 1      ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN|datae                                                     ;
+;   128.058 ;   0.066 ; RF ; CELL ; 4      ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN|combout                                                   ;
+;   128.100 ;   0.042 ; FR ; CELL ; 10     ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN~cw_la_lab/lab_lut6outt[1]                                 ;
+;   128.495 ;   0.395 ; RR ; IC   ; 1      ; FF_X57_Y23_N35     ; ALM Register       ; harness|s1_idx[0]~_DuplicateDUPLICATE|d                                          ;
+;   128.495 ;   0.000 ; RR ; CELL ; 1      ; FF_X57_Y23_N35     ; ALM Register       ; harness|s1_idx[0]~_DuplicateDUPLICATE                                            ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+
++-------------------------------------------------------------------------------------------------------------------+
+; Data Required Path                                                                                                ;
++-----------+----------+----+------+--------+----------------+--------------+---------------------------------------+
+; Total     ; Incr     ; RF ; Type ; Fanout ; Location       ; Element Type ; Element                               ;
++-----------+----------+----+------+--------+----------------+--------------+---------------------------------------+
+; 120.833   ; 120.833  ;    ;      ;        ;                ;              ; latch edge time                       ;
+; 126.646   ; 5.813    ;    ;      ;        ;                ;              ; clock path                            ;
+;   126.322 ;   5.489  ; R  ;      ;        ;                ;              ; clock network delay                   ;
+;   126.700 ;   0.378  ;    ;      ;        ;                ;              ; clock pessimism removed               ;
+;   126.646 ;   -0.054 ;    ;      ;        ;                ;              ; advanced clock effects                ;
+; 126.596   ; -0.050   ;    ;      ;        ;                ;              ; clock uncertainty                     ;
+; 126.643   ; 0.047    ;    ; uTsu ; 1      ; FF_X57_Y23_N35 ; ALM Register ; harness|s1_idx[0]~_DuplicateDUPLICATE ;
++-----------+----------+----+------+--------+----------------+--------------+---------------------------------------+
+
+
+Path #4: Setup slack is -1.852 (VIOLATED)
+===============================================================================
++----------------------------------------------------------------------------------+
+; Path Summary                                                                     ;
++---------------------------------+------------------------------------------------+
+; Property                        ; Value                                          ;
++---------------------------------+------------------------------------------------+
+; From Node                       ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg ;
+; To Node                         ; harness|s1_idx[0]~_Duplicate                   ;
+; Launch Clock                    ; u0|pll|iopll_inst|tennm_ph2_iopll|ref_clk0     ;
+; Latch Clock                     ; u0|pll|iopll_inst_outclk1                      ;
+; SDC Exception                   ; No SDC Exception on Path                       ;
+; Data Arrival Time               ; 128.495                                        ;
+; Data Required Time              ; 126.643                                        ;
+; Slack                           ; -1.852 (VIOLATED)                              ;
+; Worst-Case Operating Conditions ; Slow fix6a 0C Model                            ;
++---------------------------------+------------------------------------------------+
+
++--------------------------------------------------------------------------------------+
+; Statistics                                                                           ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+; Property                  ; Value ; Count ; Total Delay ; % of Total ; Min   ; Max   ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+; Setup Relationship        ; 0.833 ;       ;             ;            ;       ;       ;
+; Clock Skew                ; 1.712 ;       ;             ;            ;       ;       ;
+; Data Delay                ; 4.394 ;       ;             ;            ;       ;       ;
+; Number of Logic Levels    ;       ; 1     ;             ;            ;       ;       ;
+; Physical Delays           ;       ;       ;             ;            ;       ;       ;
+;  Arrival Path             ;       ;       ;             ;            ;       ;       ;
+;   Clock                   ;       ;       ;             ;            ;       ;       ;
+;    Clock Network (Lumped) ;       ; 1     ; 4.101       ; 100        ; 4.101 ; 4.101 ;
+;   Data                    ;       ;       ;             ;            ;       ;       ;
+;    IC                     ;       ; 2     ; 2.684       ; 61         ; 0.395 ; 2.289 ;
+;    Cell                   ;       ; 4     ; 0.920       ; 21         ; 0.000 ; 0.812 ;
+;    uTco                   ;       ; 1     ; 0.790       ; 18         ; 0.790 ; 0.790 ;
+;  Required Path            ;       ;       ;             ;            ;       ;       ;
+;   Clock                   ;       ;       ;             ;            ;       ;       ;
+;    Clock Network (Lumped) ;       ; 1     ; 5.489       ; 100        ; 5.489 ; 5.489 ;
++---------------------------+-------+-------+-------------+------------+-------+-------+
+Note: Negative delays are omitted from totals when calculating percentages
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Data Arrival Path                                                                                                                                                     ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+; Total     ; Incr    ; RF ; Type ; Fanout ; Location           ; Element Type       ; Element                                                                          ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+; 120.000   ; 120.000 ;    ;      ;        ;                    ;                    ; launch edge time                                                                 ;
+; 124.101   ; 4.101   ;    ;      ;        ;                    ;                    ; clock path                                                                       ;
+;   124.101 ;   4.101 ; R  ;      ;        ;                    ;                    ; clock network delay                                                              ;
+;   124.101 ;   0.000 ;    ;      ; 1      ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll~pll_ctrl_reg                                   ;
+; 128.495   ; 4.394   ;    ;      ;        ;                    ;                    ; data path                                                                        ;
+;   124.891 ;   0.790 ; RR ; uTco ; 1      ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll|lock                                           ;
+;   125.703 ;   0.812 ; RR ; CELL ; 637    ; IOPLL_X63_Y53_N0   ; IOPLL              ; u0|pll|iopll_inst|tennm_ph2_iopll~io96/s2_0_39__vio_mlab_core_periphery__p2c[10] ;
+;   127.992 ;   2.289 ; RR ; IC   ; 1      ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN|datae                                                     ;
+;   128.058 ;   0.066 ; RF ; CELL ; 4      ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN|combout                                                   ;
+;   128.100 ;   0.042 ; FR ; CELL ; 10     ; LABCELL_X54_Y23_N6 ; Combinational cell ; harness|i57376~0_RESYN~cw_la_lab/lab_lut6outt[1]                                 ;
+;   128.495 ;   0.395 ; RR ; IC   ; 1      ; FF_X57_Y23_N34     ; ALM Register       ; harness|s1_idx[0]~_Duplicate|d                                                   ;
+;   128.495 ;   0.000 ; RR ; CELL ; 1      ; FF_X57_Y23_N34     ; ALM Register       ; harness|s1_idx[0]~_Duplicate                                                     ;
++-----------+---------+----+------+--------+--------------------+--------------------+----------------------------------------------------------------------------------+
+
++----------------------------------------------------------------------------------------------------------+
+; Data Required Path                                                                                       ;
++-----------+----------+----+------+--------+----------------+--------------+------------------------------+
+; Total     ; Incr     ; RF ; Type ; Fanout ; Location       ; Element Type ; Element                      ;
++-----------+----------+----+------+--------+----------------+--------------+------------------------------+
+; 120.833   ; 120.833  ;    ;      ;        ;                ;              ; latch edge time              ;
+; 126.646   ; 5.813    ;    ;      ;        ;                ;              ; clock path                   ;
+;   126.322 ;   5.489  ; R  ;      ;        ;                ;              ; clock network delay          ;
+;   126.700 ;   0.378  ;    ;      ;        ;                ;              ; clock pessimism removed      ;
+;   126.646 ;   -0.054 ;    ;      ;        ;                ;              ; advanced clock effects       ;
+; 126.596   ; -0.050   ;    ;      ;        ;                ;              ; clock uncertainty            ;
+; 126.643   ; 0.047    ;    ; uTsu ; 1      ; FF_X57_Y23_N34 ; ALM Register ; harness|s1_idx[0]~_Duplicate ;
++-----------+----------+----+------+--------+----------------+--------------+------------------------------+
+
+

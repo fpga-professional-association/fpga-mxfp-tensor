@@ -7,7 +7,7 @@
 // Designer JTAG-to-Avalon master through a clock-crossing bridge, so the host (System Console)
 // sees a flat 32-bit word register map:
 //
-//   word 0x000  ID        RO  0x4D580001
+//   word 0x000  ID        RO  0x4D580002
 //   word 0x001  CTRL      WO  bit0 START, bit1 DUT_RESET (pulse)
 //   word 0x002  STATUS    RO  bit0 BUSY, bit1 DONE, bit2 ERR_OVERRUN
 //   word 0x003  NVEC      RW  number of activation vectors to stream, 1..64
@@ -15,6 +15,9 @@
 //   word 0x005  CYCLES    RO  DUT clock cycles from START to the last valid_out
 //   word 0x006  FREE_LO   RO  free-running DUT-clock counter (for on-chip frequency measurement)
 //   word 0x007  FREE_HI   RO
+//   word 0x008  MODE      RW  protocol knobs (see below)
+//   word 0x080..0x097  TRACE_FLAGS: 8 nibbles per word, nibble i&7 of word i>>3 for trace
+//                      entry i = {valid_out, dut_valid, dut_load, dut_rst} as seen at the DUT
 //   word 0x100..0x107  weight vector for DSP column 1 (result col1): words 0..7 of the packed
 //                      element vector, element j at bit [j*W +: W] of the 256-bit concatenation
 //   word 0x108         shared exponent (E8M0) for column-1 weights
@@ -22,14 +25,20 @@
 //   word 0x118         shared exponent for column-2 weights
 //   word 0x200 + 16*i + {0..7}  activation vector i (same packing), i = 0..63
 //   word 0x200 + 16*i + 8       shared exponent for activation i
-//   word 0x600 + 2*i + 0        result i, column 1 (fp32 bits)
+//   word 0x600 + 2*i + 0        result i, column 1 (fp32 bits), captured on valid_out
 //   word 0x600 + 2*i + 1        result i, column 2 (fp32 bits)
+//   word 0x680 + 2*i + {0,1}    TRACE: raw DSP outputs {col1, col2} on every DUT clock for the
+//                               first 192 clocks after START (independent of valid_out)
 //
-// Sequence on START (mirrors the paper's testbench mxfp_dot_tb.sv):
-//   cycle 0: load_en=1, data = column-2 weights      (DSP data-feed preload, bank "two")
-//   cycle 1: load_en=0, data = column-1 weights      (second preload cycle)
-//   cycles 2..N+1: valid_in=1, data = activation i   (one vector per cycle)
-//   results appear on valid_out 11 cycles later and are written to the result RAM in order.
+// MODE bits (default 0b0011):
+//   bit0 TWO_LOAD   : 1 = hold load_en for two cycles (paper testbench pattern: don't-care data,
+//                     then column-2 weights, then load_en low with column-1 weights)
+//                     0 = one load_en cycle carrying column-2 weights, then column-1 weights
+//   bit1 PIPE_ALIGN : 1 = delay load_en/valid_in by PIPE cycles so they reach the DSP together
+//                     with the data (mxfp_dot pipelines data but not the controls)
+//   bit2 LOADA_ZERO : 1 = drive zeros during the first (don't-care) load cycle, as the TB does
+//   bit3 SWAP_COLS  : 1 = present column-1 weights first, column-2 second
+//   bit[7:4] RST_CYCLES extra: number of DUT reset cycles before loading = 4 + this field
 // =============================================================================================
 `default_nettype none
 
@@ -38,13 +47,12 @@ module mxfp_harness #(
   parameter int M = 1,
   parameter int PIPE = 1,
   parameter int DOT_LEN = 32,
-  parameter int MAX_VEC = 64
+  parameter int MAX_VEC = 64,
+  parameter int TRACE_N = 192
 ) (
   input  wire        clk,
   input  wire        rst_n,
 
-  // Avalon-MM slave, 32-bit words, word addressing (11 bits), waitrequest never asserted,
-  // read latency 1 signalled with readdatavalid.
   input  wire [10:0] av_address,
   input  wire        av_read,
   input  wire        av_write,
@@ -57,34 +65,43 @@ module mxfp_harness #(
   output logic        done
 );
 
-  localparam int W = M + E + 1;              // element width
-  localparam int VW = 256;                   // packed vector width (8 words)
+  localparam int W = M + E + 1;
+  localparam int VW = 256;
   localparam int IDXW = $clog2(MAX_VEC);
+  localparam int TW = $clog2(TRACE_N);
 
   assign av_waitrequest = 1'b0;
 
   // ------------------------------------------------------------------ storage
   logic [VW-1:0] w_col1, w_col2;
   logic [7:0]    e_col1, e_col2;
-  // activation RAM: 8 word-columns x MAX_VEC, read all 8 at once for one vector per cycle
   logic [31:0] act_mem [0:7][0:MAX_VEC-1];
   logic [7:0]  act_exp [0:MAX_VEC-1];
-  // result RAM
   logic [31:0] res_c1 [0:MAX_VEC-1];
   logic [31:0] res_c2 [0:MAX_VEC-1];
+  logic [31:0] trc_c1 [0:TRACE_N-1];
+  logic [31:0] trc_c2 [0:TRACE_N-1];
+  logic [3:0]  trc_fl [0:TRACE_N-1];
 
-  logic [IDXW:0] nvec;          // 1..64
+  logic [IDXW:0] nvec;
   logic [31:0]   cycles;
   logic [63:0]   free_cnt;
+  logic [7:0]    mode;
   logic          err_overrun;
   logic          start_q, dut_rst_req;
+
+  wire mode_two_load  = mode[0];
+  wire mode_pipe_al   = mode[1];
+  wire mode_loada_z   = mode[2];
+  wire mode_swap      = mode[3];
+  wire [3:0] mode_rst = mode[7:4];
 
   // ------------------------------------------------------------------ Avalon write
   always_ff @(posedge clk) begin
     start_q     <= 1'b0;
     dut_rst_req <= 1'b0;
     if (!rst_n) begin
-      nvec <= 'd1;
+      nvec <= 'd1; mode <= 8'h03;
       w_col1 <= '0; w_col2 <= '0; e_col1 <= 8'd127; e_col2 <= 8'd127;
     end else if (av_write) begin
       case (av_address[10:8])
@@ -92,10 +109,11 @@ module mxfp_harness #(
           case (av_address[7:0])
             8'h01: begin start_q <= av_writedata[0]; dut_rst_req <= av_writedata[1]; end
             8'h03: nvec <= av_writedata[IDXW:0];
+            8'h08: mode <= av_writedata[7:0];
             default: ;
           endcase
         end
-        3'h1: begin // weights
+        3'h1: begin
           if (av_address[7:4] == 4'h0) begin
             if (av_address[3]) e_col1 <= av_writedata[7:0];
             else w_col1[av_address[2:0]*32 +: 32] <= av_writedata;
@@ -109,9 +127,9 @@ module mxfp_harness #(
     end
   end
 
-  // activation RAM write (separate always block so Quartus infers RAM cleanly)
-  wire        act_wr   = av_write && (av_address[10:9] == 2'b01);   // 0x200..0x3FF
-  wire [5:0]  act_slot = av_address[9:4];
+  // activation slots i = 0..63 live at words 0x200 + 16*i, i.e. 0x200..0x5FF
+  wire        act_wr   = av_write && (av_address[10:9] == 2'b01 || av_address[10:9] == 2'b10);
+  wire [5:0]  act_slot = {av_address[10], av_address[8:4]};
   always_ff @(posedge clk) begin
     if (act_wr && !av_address[3]) act_mem[av_address[2:0]][act_slot] <= av_writedata;
     if (act_wr &&  av_address[3] && av_address[2:0] == 3'd0) act_exp[act_slot] <= av_writedata[7:0];
@@ -119,25 +137,43 @@ module mxfp_harness #(
 
   // ------------------------------------------------------------------ Avalon read
   logic [31:0] rd_mux;
+  wire  [TW-1:0] trc_rd_idx = av_address[TW:1];   // 0x680.. : (addr-0x680)/2; low bits suffice since 0x680 is 2-aligned
   always_comb begin
     rd_mux = 32'hDEAD_BEEF;
     case (av_address[10:8])
-      3'h0: case (av_address[7:0])
-        8'h00: rd_mux = 32'h4D58_0001;
-        8'h02: rd_mux = {29'd0, err_overrun, done, busy};
-        8'h03: rd_mux = {{(31-IDXW){1'b0}}, nvec};
-        8'h04: rd_mux = {16'd0, E[7:0], M[7:0]};
-        8'h05: rd_mux = cycles;
-        8'h06: rd_mux = free_cnt[31:0];
-        8'h07: rd_mux = free_cnt[63:32];
-        default: rd_mux = 32'h0;
-      endcase
+      3'h0: begin
+        if (av_address[7]) begin // 0x080..0x0FF trace flags
+          rd_mux = '0;
+          for (int n = 0; n < 8; n++) begin
+            int idx; idx = {av_address[6:0], 3'b000} + n;
+            if (idx < TRACE_N) rd_mux[n*4 +: 4] = trc_fl[idx];
+          end
+        end else case (av_address[6:0])
+          7'h00: rd_mux = 32'h4D58_0002;
+          7'h02: rd_mux = {29'd0, err_overrun, done, busy};
+          7'h03: rd_mux = {{(31-IDXW){1'b0}}, nvec};
+          7'h04: rd_mux = {16'd0, E[7:0], M[7:0]};
+          7'h05: rd_mux = cycles;
+          7'h06: rd_mux = free_cnt[31:0];
+          7'h07: rd_mux = free_cnt[63:32];
+          7'h08: rd_mux = {24'd0, mode};
+          default: rd_mux = 32'h0;
+        endcase
+      end
       3'h1: begin
         if (av_address[7:4] == 4'h0) rd_mux = av_address[3] ? {24'd0, e_col1} : w_col1[av_address[2:0]*32 +: 32];
         else if (av_address[7:4] == 4'h1) rd_mux = av_address[3] ? {24'd0, e_col2} : w_col2[av_address[2:0]*32 +: 32];
       end
-      3'h2, 3'h3: rd_mux = av_address[3] ? {24'd0, act_exp[act_slot]} : act_mem[av_address[2:0]][act_slot];
-      3'h6: rd_mux = av_address[0] ? res_c2[av_address[6:1]] : res_c1[av_address[6:1]];
+      3'h2, 3'h3, 3'h4, 3'h5: rd_mux = av_address[3] ? {24'd0, act_exp[act_slot]} : act_mem[av_address[2:0]][act_slot];
+      3'h6: begin
+        if (!av_address[7]) rd_mux = av_address[0] ? res_c2[av_address[6:1]] : res_c1[av_address[6:1]];
+        else begin // 0x680..0x6FF trace entries 0..63
+          rd_mux = av_address[0] ? trc_c2[{1'b0, 1'b0, av_address[6:1]}] : trc_c1[{1'b0, 1'b0, av_address[6:1]}];
+        end
+      end
+      3'h7: begin // 0x700..0x7FF trace entries 64..191
+        rd_mux = av_address[0] ? trc_c2[{1'b0, av_address[7:1]} + 64] : trc_c1[{1'b0, av_address[7:1]} + 64];
+      end
       default: ;
     endcase
   end
@@ -151,46 +187,50 @@ module mxfp_harness #(
   typedef enum logic [2:0] {S_IDLE, S_RST, S_LOADA, S_LOAD2, S_LOAD1, S_STREAM, S_DRAIN, S_DONE} state_t;
   state_t state;
 
-  // stage 0: command generation; stage 1: data mux (RAM output) -> DUT
-  logic        s0_load, s0_valid, s0_sel_w2, s0_sel_w1;
+  logic        s0_load, s0_valid, s0_sel_w2, s0_sel_w1, s0_zero;
   logic [IDXW-1:0] s0_idx;
-  logic        s1_load, s1_valid, s1_sel_w2, s1_sel_w1;
+  logic        s1_load, s1_valid, s1_sel_w2, s1_sel_w1, s1_zero;
   logic [IDXW-1:0] s1_idx;
   logic [IDXW:0]   stream_cnt, out_cnt;
-  logic [3:0]      rst_cnt;
+  logic [4:0]      rst_cnt;
   logic            dut_rst;
   logic [VW-1:0]   act_vec_rd;
   logic [7:0]      act_exp_rd;
+  logic [TW:0]     trc_cnt;
 
   always_comb begin
     for (int k = 0; k < 8; k++) act_vec_rd[k*32 +: 32] = act_mem[k][s1_idx];
     act_exp_rd = act_exp[s1_idx];
   end
 
-  // DUT ports
   logic [VW-1:0] dut_vec;
   logic [7:0]    dut_exp;
   logic          dut_load, dut_valid;
   logic [31:0]   dut_out1, dut_out2;
   logic          dut_valid_out;
+  logic          dut_load_al, dut_valid_al;
+
+  // "first" weights = column 2 (goes with load_en high), "second" = column 1, unless swapped
+  wire [VW-1:0] wfirst  = mode_swap ? w_col1 : w_col2;
+  wire [7:0]    efirst  = mode_swap ? e_col1 : e_col2;
+  wire [VW-1:0] wsecond = mode_swap ? w_col2 : w_col1;
+  wire [7:0]    esecond = mode_swap ? e_col2 : e_col1;
 
   always_ff @(posedge clk) begin
     if (!rst_n) begin
       state <= S_IDLE; busy <= 1'b0; done <= 1'b0; err_overrun <= 1'b0;
-      s0_load <= 1'b0; s0_valid <= 1'b0; s0_sel_w1 <= 1'b0; s0_sel_w2 <= 1'b0; s0_idx <= '0;
-      s1_load <= 1'b0; s1_valid <= 1'b0; s1_sel_w1 <= 1'b0; s1_sel_w2 <= 1'b0; s1_idx <= '0;
+      s0_load <= 1'b0; s0_valid <= 1'b0; s0_sel_w1 <= 1'b0; s0_sel_w2 <= 1'b0; s0_zero <= 1'b0; s0_idx <= '0;
+      s1_load <= 1'b0; s1_valid <= 1'b0; s1_sel_w1 <= 1'b0; s1_sel_w2 <= 1'b0; s1_zero <= 1'b0; s1_idx <= '0;
       stream_cnt <= '0; out_cnt <= '0; cycles <= '0; rst_cnt <= '0; dut_rst <= 1'b1;
-      dut_load <= 1'b0; dut_valid <= 1'b0; dut_vec <= '0; dut_exp <= 8'd127;
+      dut_load <= 1'b0; dut_valid <= 1'b0; dut_vec <= '0; dut_exp <= 8'd127; trc_cnt <= '1;
     end else begin
-      // defaults for stage 0
-      s0_load <= 1'b0; s0_valid <= 1'b0; s0_sel_w1 <= 1'b0; s0_sel_w2 <= 1'b0;
-      // stage 1 <- stage 0
-      s1_load <= s0_load; s1_valid <= s0_valid; s1_sel_w1 <= s0_sel_w1; s1_sel_w2 <= s0_sel_w2; s1_idx <= s0_idx;
-      // DUT <- stage 1 (data mux)
+      s0_load <= 1'b0; s0_valid <= 1'b0; s0_sel_w1 <= 1'b0; s0_sel_w2 <= 1'b0; s0_zero <= 1'b0;
+      s1_load <= s0_load; s1_valid <= s0_valid; s1_sel_w1 <= s0_sel_w1; s1_sel_w2 <= s0_sel_w2; s1_zero <= s0_zero; s1_idx <= s0_idx;
       dut_load  <= s1_load;
       dut_valid <= s1_valid;
-      if (s1_sel_w2)      begin dut_vec <= w_col2;     dut_exp <= e_col2;     end
-      else if (s1_sel_w1) begin dut_vec <= w_col1;     dut_exp <= e_col1;     end
+      if (s1_zero)        begin dut_vec <= '0;         dut_exp <= 8'd0;       end
+      else if (s1_sel_w2) begin dut_vec <= wfirst;     dut_exp <= efirst;     end
+      else if (s1_sel_w1) begin dut_vec <= wsecond;    dut_exp <= esecond;    end
       else                begin dut_vec <= act_vec_rd; dut_exp <= act_exp_rd; end
 
       if (dut_rst_req) dut_rst <= 1'b1;
@@ -199,22 +239,22 @@ module mxfp_harness #(
         S_IDLE: begin
           dut_rst <= dut_rst_req;
           if (start_q) begin
-            state <= S_RST; rst_cnt <= 4'd8; dut_rst <= 1'b1;
+            state <= S_RST; rst_cnt <= 5'd4 + {1'b0, mode_rst}; dut_rst <= 1'b1;
             busy <= 1'b1; done <= 1'b0; err_overrun <= 1'b0;
-            stream_cnt <= '0; out_cnt <= '0; cycles <= '0;
+            stream_cnt <= '0; out_cnt <= '0; cycles <= '0; trc_cnt <= '0;
           end
         end
         S_RST: begin
           cycles <= cycles + 1;
-          if (rst_cnt == 0) begin dut_rst <= 1'b0; state <= S_LOADA; end
+          if (rst_cnt == 0) begin dut_rst <= 1'b0; state <= mode_two_load ? S_LOADA : S_LOAD2; end
           else rst_cnt <= rst_cnt - 1;
         end
-        S_LOADA: begin // first load_en cycle: data is don't-care (paper TB presents zeros)
+        S_LOADA: begin
           cycles <= cycles + 1;
-          s0_load <= 1'b1; s0_sel_w2 <= 1'b1;
+          s0_load <= 1'b1; s0_sel_w2 <= 1'b1; s0_zero <= mode_loada_z;
           state <= S_LOAD2;
         end
-        S_LOAD2: begin // second load_en cycle: column-2 weights
+        S_LOAD2: begin
           cycles <= cycles + 1;
           s0_load <= 1'b1; s0_sel_w2 <= 1'b1;
           state <= S_LOAD1;
@@ -233,8 +273,8 @@ module mxfp_harness #(
         end
         S_DRAIN: begin
           cycles <= cycles + 1;
-          if (out_cnt >= nvec) state <= S_DONE;
-          if (cycles > 32'd4096) begin err_overrun <= 1'b1; state <= S_DONE; end // timeout guard
+          if (out_cnt >= nvec && trc_cnt >= TRACE_N) state <= S_DONE;
+          if (cycles > 32'd4096) begin err_overrun <= 1'b1; state <= S_DONE; end
         end
         S_DONE: begin
           busy <= 1'b0; done <= 1'b1; state <= S_IDLE;
@@ -242,7 +282,6 @@ module mxfp_harness #(
         default: state <= S_IDLE;
       endcase
 
-      // capture results
       if (dut_valid_out && state != S_IDLE) begin
         if (out_cnt < MAX_VEC) begin
           res_c1[out_cnt[IDXW-1:0]] <= dut_out1;
@@ -250,17 +289,18 @@ module mxfp_harness #(
         end
         out_cnt <= out_cnt + 1;
       end
+
+      // per-cycle trace of the raw DSP outputs and the control signals as the DUT sees them
+      if (trc_cnt < TRACE_N) begin
+        trc_c1[trc_cnt[TW-1:0]] <= dut_out1;
+        trc_c2[trc_cnt[TW-1:0]] <= dut_out2;
+        trc_fl[trc_cnt[TW-1:0]] <= {dut_valid_out, dut_valid_al, dut_load_al, dut_rst};
+        trc_cnt <= trc_cnt + 1;
+      end
     end
   end
 
-  // ------------------------------------------------------------------ DUT
-  logic [W-1:0] mx_data_in [0:DOT_LEN-1];
-  always_comb for (int j = 0; j < DOT_LEN; j++) mx_data_in[j] = dut_vec[j*W +: W];
-
-  // mxfp_dot pipelines mx_data_in and shared_exponent by PIPE stages but passes load_en and
-  // valid_in straight through (its testbench uses PIPE=0). Delay the controls here so the DSP
-  // sees them aligned with the data.
-  logic dut_load_al, dut_valid_al;
+  // ------------------------------------------------------------------ control alignment
   generate if (PIPE == 0) begin : g_nopipe
     assign dut_load_al = dut_load; assign dut_valid_al = dut_valid;
   end else begin : g_pipe
@@ -269,8 +309,13 @@ module mxfp_harness #(
       ld_sr <= {ld_sr, dut_load};
       vl_sr <= {vl_sr, dut_valid};
     end
-    assign dut_load_al = ld_sr[PIPE-1]; assign dut_valid_al = vl_sr[PIPE-1];
+    assign dut_load_al  = mode_pipe_al ? ld_sr[PIPE-1] : dut_load;
+    assign dut_valid_al = mode_pipe_al ? vl_sr[PIPE-1] : dut_valid;
   end endgenerate
+
+  // ------------------------------------------------------------------ DUT
+  logic [W-1:0] mx_data_in [0:DOT_LEN-1];
+  always_comb for (int j = 0; j < DOT_LEN; j++) mx_data_in[j] = dut_vec[j*W +: W];
 
   mxfp_dot #(
     .M(M), .E(E), .E_SHARED(8), .FP_BIAS(1), .SH_BIAS(127), .PIPE(PIPE), .DOT_LEN(DOT_LEN)

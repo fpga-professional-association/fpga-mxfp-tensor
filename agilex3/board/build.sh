@@ -3,7 +3,7 @@
 #   bash build.sh            full flow (syn, fit, sta, asm) -> syn/output_files/top.sof
 #   bash build.sh syn        synthesis only
 # Regenerate the Platform Designer shell first if qsys/mx_shell.tcl changed:
-#   (cd qsys && qsys-script --quartus-project=none --script=mx_shell.tcl 250.0 &&
+#   (cd qsys && qsys-script --quartus-project=none --script=mx_shell.tcl 240.0 &&
 #    qsys-generate mx_shell.qsys --synthesis=VERILOG --quartus-project=none --family="Agilex 3" --part=A3CY100BM16AE7S)
 set -e
 Q=/c/altera_pro/26.1/quartus/bin64

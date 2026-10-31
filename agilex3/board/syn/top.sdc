@@ -5,8 +5,11 @@ derive_pll_clocks
 derive_clock_uncertainty
 set ck_sys [get_clocks -nowarn {*pll*outclk0*}]
 set ck_dut [get_clocks -nowarn {*pll*outclk1*}]
+set ck_ref [get_clocks -nowarn {CLK_25M *refclk* *ref_clk0*}]
 if {[get_collection_size $ck_sys] > 0 && [get_collection_size $ck_dut] > 0} {
-    set_clock_groups -asynchronous -group $ck_sys -group $ck_dut
+    # the reset bridges synchronise pll_locked into each PLL output domain; the PLL reference
+    # domain (lock/control registers) is asynchronous to both output clocks
+    set_clock_groups -asynchronous -group $ck_ref -group $ck_sys -group $ck_dut
 } else {
     post_message -type critical_warning "top.sdc: PLL clock groups not matched"
 }

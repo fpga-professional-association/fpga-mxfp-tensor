@@ -81,7 +81,7 @@ Altera and sold by Altera or its authorized distributors.-->
         <ipxact:parameter parameterId="clockRate" type="longint">
           <ipxact:name>clockRate</ipxact:name>
           <ipxact:displayName>Clock rate</ipxact:displayName>
-          <ipxact:value>250000000</ipxact:value>
+          <ipxact:value>240000000</ipxact:value>
         </ipxact:parameter>
         <ipxact:parameter parameterId="clockRateKnown" type="bit">
           <ipxact:name>clockRateKnown</ipxact:name>
@@ -157,7 +157,7 @@ Altera and sold by Altera or its authorized distributors.-->
         <ipxact:parameter parameterId="DERIVED_CLOCK_RATE" type="longint">
           <ipxact:name>DERIVED_CLOCK_RATE</ipxact:name>
           <ipxact:displayName>Derived clock rate</ipxact:displayName>
-          <ipxact:value>250000000</ipxact:value>
+          <ipxact:value>240000000</ipxact:value>
         </ipxact:parameter>
         <ipxact:parameter parameterId="EXPLICIT_CLOCK_RATE" type="longint">
           <ipxact:name>EXPLICIT_CLOCK_RATE</ipxact:name>
@@ -284,7 +284,7 @@ Altera and sold by Altera or its authorized distributors.-->
                     &lt;/entry&gt;
                     &lt;entry&gt;
                         &lt;key&gt;clockRate&lt;/key&gt;
-                        &lt;value&gt;250000000&lt;/value&gt;
+                        &lt;value&gt;240000000&lt;/value&gt;
                     &lt;/entry&gt;
                     &lt;entry&gt;
                         &lt;key&gt;clockRateKnown&lt;/key&gt;
@@ -315,7 +315,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 &lt;suppliedSystemInfos&gt;
                     &lt;entry&gt;
                         &lt;key&gt;CLOCK_RATE&lt;/key&gt;
-                        &lt;value&gt;250000000&lt;/value&gt;
+                        &lt;value&gt;240000000&lt;/value&gt;
                     &lt;/entry&gt;
                 &lt;/suppliedSystemInfos&gt;
                 &lt;consumedSystemInfos/&gt;
@@ -329,7 +329,7 @@ Altera and sold by Altera or its authorized distributors.-->
                 &lt;consumedSystemInfos&gt;
                     &lt;entry&gt;
                         &lt;key&gt;CLOCK_RATE&lt;/key&gt;
-                        &lt;value&gt;250000000&lt;/value&gt;
+                        &lt;value&gt;240000000&lt;/value&gt;
                     &lt;/entry&gt;
                 &lt;/consumedSystemInfos&gt;
             &lt;/value&gt;
