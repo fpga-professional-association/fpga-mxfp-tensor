@@ -1,0 +1,14 @@
+# Quartus work dirs for the characterization sweeps and the board build
+char/aitb_*/
+char/fp16_*/
+char/packed_*/
+board/syn/qdb/
+board/syn/tmp-clearbox/
+board/syn/output_files/
+board/syn/*.qws
+board/syn/*.qdf
+board/syn/*.qpf
+board/qsys/mx_shell/
+board/qsys/ip/mx_shell/*/
+board/qsys/*.log
+board/*.log

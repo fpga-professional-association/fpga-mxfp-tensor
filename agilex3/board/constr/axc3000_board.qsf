@@ -1,0 +1,377 @@
+#==============================================================================
+# axc3000_board.qsf — Arrow AXC3000 (Trenz TEI0131) board constraint fragment
+#
+#   Device : Altera Agilex 3  A3CY100BM16AE7S
+#   Board  : Arrow AXC3000 = Trenz TEI0131, schematic TEI0131-P001 Rev 01, 2025-05-28
+#
+# Include from a project .qsf with:      source ../constr/axc3000_board.qsf
+# (or `set_global_assignment -name SOURCE_TCL_SCRIPT_FILE` / paste inline).
+# The FAMILY/DEVICE globals below must be in effect before the pin assignments are
+# read, so source this EARLY or let this file set them (it does, at the top).
+#
+# EVERY assignment here is traceable. Citation tags:
+#   [SCH-pN]     devkit-schematics.pdf page N  (D:\altera_demo\Blinky\agilex_3\devkit-schematics.pdf)
+#                  p3  A-Headers.SchDoc   p5  FPGA_SDM.SchDoc   p6  FPGA.SchDoc
+#                  p7  FPGA2.SchDoc       p8  FPGA3.SchDoc      p13 HyperRAM.SchDoc
+#                  p14 FTDI.SchDoc        p15 PowerSupply.SchDoc
+#   [BLINKY]     D:\altera_demo\Blinky\axc3000-led-uart\quartus\led_cmd_top.qsf   (silicon-proven)
+#   [HR-PINS]    third_party/hyperram/fpga/axc3000/pins.tcl                       (silicon-proven)
+#   [HR-QSF]     third_party/hyperram/fpga/axc3000/bw.qsf
+#   [HR-QSF-BAK] third_party/hyperram/fpga/axc3000/bw.qsf.backup
+#   [HR-TOP]     third_party/hyperram/fpga/axc3000/top.sv
+#   [HR-RDME]    third_party/hyperram/fpga/axc3000/README.md
+#   [HR-ROOT]    third_party/hyperram/README.md
+#
+# Full narrative, wire traces and open questions: docs/BOARD_PINOUT.md
+#==============================================================================
+
+#------------------------------------------------------------------------------
+# Device / family
+#   [SCH-p7] symbol part number; [BLINKY]; [HR-QSF]
+#------------------------------------------------------------------------------
+set_global_assignment -name FAMILY "Agilex 3"
+set_global_assignment -name DEVICE A3CY100BM16AE7S
+set_global_assignment -name LAST_QUARTUS_VERSION "26.1.0 Pro Edition"
+
+#==============================================================================
+# 1. 25 MHz board oscillator
+#==============================================================================
+# U12 = 510KCA25M0000CAG, 25 MHz XO, VDD 1.8 V (ferrite L9 + C73 470 nF).        [SCH-p5]
+# Its output fans out three ways:
+#     -> net CLK_25M   : DIRECT to FPGA AG11 = OSC_CLK_1 (dedicated SDM config clock)
+#     -> R12 0R        : *** DNP / NOT FITTED (red X on the schematic) *** -> CLK_HPS is dead
+#     -> C7 100 pF NP0 in series, with C10 39 pF NP0 shunt to GND
+#                      : net CLK_25M_C -> FPGA A7 (bank 3A) and FPGA AD5 (bank 2A) [SCH-p6]
+#
+# So CLK_25M_C is AC-COUPLED and CAPACITIVELY DIVIDED, ratio 100/(100+39) = 0.719,
+# turning the 1.8 V XO swing into ~1.29 V p-p — which is how an 1.8 V oscillator
+# legally drives a 1.2 V VCCIO bank pin. There is no buffer and NO DC BIAS PATH.
+#
+#   *** DO NOT add WEAK_PULL_UP_RESISTOR / WEAK_PULL_DOWN_RESISTOR to CLK_25M. ***
+#   The node's bias point is set by pin leakage alone; a weak pull would drag it to
+#   a rail and stop the clock.  (Deduced from the C7/C10 topology in [SCH-p5].)
+#
+# A7 = IO34, CLK_B_3A_0P, DIFF_IO_3A_B7P, DQ13 — bank 3A, VCCIO 1.2 V           [SCH-p7]
+# [SCH-p7] [BLINKY] [HR-PINS]
+set_location_assignment PIN_A7 -to CLK_25M
+# [SCH-p7] bank 3A VCCIO=1.2V; [BLINKY] [HR-PINS]
+set_instance_assignment -name IO_STANDARD "1.2 V" -to CLK_25M
+
+# A7 is a GENERAL I/O, not a dedicated PLL refclk pin: without promotion to the
+# global clock network the Fitter rejects it as an IOPLL reference source with
+# error 23527. Silicon-proven remedy, copied verbatim.                          [HR-PINS]
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to CLK_25M
+
+# Vendored HyperBus example names this port CLK_25M_C. Uncomment if you
+# instantiate third_party/hyperram/fpga/axc3000/top.sv unmodified.              [HR-TOP]
+#   set_location_assignment PIN_A7 -to CLK_25M_C
+#   set_instance_assignment -name IO_STANDARD "1.2 V" -to CLK_25M_C
+#   set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to CLK_25M_C
+
+#==============================================================================
+# 2. HyperRAM — Winbond W957D8NBRA4I (U5), x8 HyperBus DDR, 1.2 V
+#==============================================================================
+# ALL HyperRAM I/O is in FPGA IO Bank 3A. VCCIO_PIO_3A_T (G12,H11) and
+# VCCIO_PIO_3A_B (G14,H13) are BOTH tied to 1.2 V.                              [SCH-p7]
+# Device side confirms: U5 VCC (B4) and VCCQ (D1,E4) on the same 1.2 V node,
+# decoupled by C3/C14/C18 470 nF 6.3 V.                                         [SCH-p13]
+#   ==> The HyperRAM bank is 1.2 V. Any 1.8 V claim is WRONG.
+#
+# Signal names are exactly those of the vendored controller's AXC3000 example
+# (top.sv ports / pins.tcl), so this fragment drops straight into Phase 3.       [HR-TOP]
+#
+#  RTL        FPGA ball  Bank-3A pin function                                     Net      U5 ball
+#  ---------  ---------  ---------------------------------------------------      -------  -------
+#  hb_ck      D7         IO46, DIFF_IO_3A_B1P,  DQ12                              CLK      B2  CK
+#  hb_cs_n    D8         IO47, DIFF_IO_3A_B1N,  DQ12                              CS       A3  CS#
+#  hb_rst_n   F7         IO45, DIFF_IO_3A_B2N,  DQ12                              HRESET   A4  RESET#
+#  hb_rwds    A6         IO28, DIFF_IO_3A_B10P, DQS13/CQ13                        RWDS     C3  RWDS
+#  hb_dq[0]   C3         IO26, DIFF_IO_3A_B11P, DQ13                              DQ0      D3
+#  hb_dq[1]   C2         IO24, DIFF_IO_3A_B12P, DQ13                              DQ1      D2
+#  hb_dq[2]   B4         IO31, PLL_3A_B_CLKOUT0N, DIFF_IO_3A_B9N,  DQ13           DQ2      C4
+#  hb_dq[3]   B6         IO35, CLK_B_3A_0N,     DIFF_IO_3A_B7N,    DQ13           DQ3      D4
+#  hb_dq[4]   D3         IO25, DIFF_IO_3A_B12N, DQ13                              DQ4      D5
+#  hb_dq[5]   A4         IO30, PLL_3A_B_CLKOUT0P, PLL_3A_B_FB0, DIFF_IO_3A_B9P, DQ13  DQ5  E3
+#  hb_dq[6]   B3         IO27, DIFF_IO_3A_B11N, DQ13                              DQ6      E2
+#  hb_dq[7]   C6         IO33, DIFF_IO_3A_B8N,  DQ13                              DQ7      E1
+#                                                            all rows: [SCH-p7] + [SCH-p13]
+#
+# ---------------------------------------------------------------------------
+# CS# / CK PIN CORRECTION — READ BEFORE CHANGING ANYTHING
+# ---------------------------------------------------------------------------
+# The Arrow "AXC3000 Evaluation Board User Guide" v1.2.1 AND the table body of
+# third_party/hyperram/docs/board/axc3000_hyperram_pinout.md give CS#=C7, CK=B5.
+# BOTH ARE WRONG. Independent re-trace of [SCH-p7] (coordinate text extraction +
+# visual render of the bank-3A pin list) shows:
+#     D8 -> CS      D7 -> CLK      F7 -> HRESET
+#     C7 -> (explicit red no-connect cross)   B5 -> (explicit red no-connect cross)
+# C7 and B5 are UNBONDED on this board. Driving CS#/CK there drives dangling
+# balls — which is exactly the silicon failure [HR-PINS] records ("the HyperRAM
+# never received a clock/select and no transaction completed"). Schematic and
+# silicon corroborate: D8 / D7 is correct.        [SCH-p7] [HR-PINS] [HR-RDME]
+# ---------------------------------------------------------------------------
+#
+# DIFFERENTIAL vs SINGLE-ENDED CK — settled: the board wires CK SINGLE-ENDED.
+# Net CLK lands only on U5 ball B2 (CK); ball B1 (CK#/RFU) has NO net.  [SCH-p13]
+# There is no hb_ck_n board pin and top.sv exposes none.       [HR-PINS] [HR-TOP]
+#   -> instantiate the vendored core with DIFF_CK = 0.                  [HR-ROOT]
+#   -> This is a KNOWN PERFORMANCE LIMITER, not a free choice: [HR-ROOT] ties the
+#      ~176 MHz CK ceiling / page-crossing bit artifact partly to single-ended CK
+#      on a 1.2 V-class device (Infineon guidance wants differential CK/CK# here).
+#   -> Differential CK is NOT reachable by constraint changes: the FPGA pair
+#      exists (D7 = DIFF_IO_3A_B1P, D8 = DIFF_IO_3A_B1N) but D8 carries CS# and
+#      the device's CK# ball is unrouted. It needs a board respin. [SCH-p7][SCH-p13]
+
+set_location_assignment PIN_D7 -to hb_ck
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_ck
+
+set_location_assignment PIN_D8 -to hb_cs_n
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_cs_n
+
+set_location_assignment PIN_F7 -to hb_rst_n
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_rst_n
+
+set_location_assignment PIN_A6 -to hb_rwds
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_rwds
+
+set_location_assignment PIN_C3 -to hb_dq[0]
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_dq[0]
+set_location_assignment PIN_C2 -to hb_dq[1]
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_dq[1]
+set_location_assignment PIN_B4 -to hb_dq[2]
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_dq[2]
+set_location_assignment PIN_B6 -to hb_dq[3]
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_dq[3]
+set_location_assignment PIN_D3 -to hb_dq[4]
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_dq[4]
+set_location_assignment PIN_A4 -to hb_dq[5]
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_dq[5]
+set_location_assignment PIN_B3 -to hb_dq[6]
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_dq[6]
+set_location_assignment PIN_C6 -to hb_dq[7]
+set_instance_assignment -name IO_STANDARD "1.2 V" -to hb_dq[7]
+
+#------------------------------------------------------------------------------
+# 2a. Board pull-ups already present — do NOT duplicate internally
+#------------------------------------------------------------------------------
+# R38 2 kOhm 1% pulls HRESET up to 1.2 V; R48 2 kOhm 1% pulls CS up to 1.2 V.  [SCH-p13]
+# The HyperRAM is therefore held deselected and out of reset whenever the FPGA
+# pins are tri-stated (pre-configuration). No WEAK_PULL_UP_RESISTOR is required
+# or wanted on hb_cs_n / hb_rst_n.
+
+#------------------------------------------------------------------------------
+# 2b. DQ-group / DQS topology — why the CK path needs help and the RX path does not
+#------------------------------------------------------------------------------
+# DQ13 group : hb_dq[7:0] + hb_rwds. hb_rwds (A6) sits on that group's DEDICATED
+#              DQS positive input (DQS13/CQ13) -> hardened strobe capture is
+#              available for READS.                                             [SCH-p7]
+# DQ12 group : hb_ck (D7), hb_cs_n (D8), hb_rst_n (F7) — plain DIFF_IO pins with
+#              NO DQS / DDR clock-forwarding resource.                          [SCH-p7]
+# B5 = DQSn13/CQn13 is NOT CONNECTED on this board.                             [SCH-p7]
+#
+# NOTE: third_party/hyperram/docs/board/axc3000_hyperram_pinout.md claims hb_ck and
+# hb_rwds "are the DQS13 differential pair". That premise dies with the C7/B5
+# correction above — hb_ck is on D7 in a DIFFERENT DQ group with no DQS resource.
+# Its conclusion (fix the PHY clocking architecture, not the pins) still stands.
+
+#------------------------------------------------------------------------------
+# 2c. HyperRAM pad-delay / eye-centring — ERRATUM FAMILY, ALL DISABLED. READ THIS.
+#------------------------------------------------------------------------------
+# There IS a known erratum family on this board around HyperRAM CK pad delay and
+# write-eye centring. The mechanism is real: with only ONE periphery clock (the
+# fix for Fitter errors 24403/24404, "can't route two IOPLL phases into Bank 3A
+# I/O"), CK and DQ launch on the same edge, so CK must be retarded ~tCK/4
+# (1.43 ns @175 MHz, 1.25 ns @200 MHz) IN THE PAD to sit centred in the DQ eye —
+# and per 2b there is no DQS resource on D7 to do it for you.        [HR-QSF] [HR-RDME]
+#
+# The vendored tree contains FOUR MUTUALLY INCONSISTENT statements about it. All
+# are reproduced verbatim below, disabled. See docs/BOARD_PINOUT.md §4 for the
+# full analysis. Do NOT enable any of them without re-deriving the value.
+#
+#   (i) [HR-QSF] line 67 — the live project file, self-labelled a KILL-TEST:
+#         # KILL-TEST: delay chain suspected of killing the CK output entirely
+#         # (capture shows no RWDS data strobe ever)
+#         set_instance_assignment -name D5_DELAY 15 -to hb_ck -entity top
+#       The same block admits the assignment NAME is an unfinished experiment:
+#         # DISCOVERY ([FIT]-1): candidate assignment names below — the compile
+#         # logs identify which one this Quartus/family accepts (unknown names
+#         # are reported/ignored); remove the rejected ones once identified.
+#       Note the value 15 is the BIDIR ceiling, not the output-pin ceiling of 63
+#       ([HR-RDME]: "OUTPUT_DELAY_CHAIN max 63 on output pins / 15 on bidir"),
+#       which suggests it was taken from the wrong row of the limits table.
+#
+#  (ii) [HR-RDME] "Clock plan" prose claims a different knob and value entirely:
+#         "hb_ck ... leaves through an ordinary output pin with a hard
+#          OUTPUT_DELAY_CHAIN 63 assignment in bw.qsf for eye centring"
+#       -> i.e.   set_instance_assignment -name OUTPUT_DELAY_CHAIN 63 -to hb_ck
+#       No such line exists in bw.qsf or bw.qsf.backup.
+#
+# (iii) [HR-QSF-BAK] line 78 — DQ0 write-eye nudge at 200 MHz, present only in the
+#       backup; the live bw.qsf replaced it with `set_global_assignment -name SEED 4`:
+#         # DQ0 write-eye nudge (200 MHz): the only marginal bit on silicon —
+#         # byte-B slot, reads-as-1, count varies run-to-run, read path proven
+#         # stable (ID0 12/12).
+#         set_instance_assignment -name OUTPUT_DELAY_CHAIN 31 -to hb_dq[0]
+#
+#  (iv) [HR-QSF] line 76 — RWDS read-eye centring, ALREADY commented out upstream
+#       because the GPIO build gets the margin in-cell (dq_cell DDIO_WITH_DELAY):
+#         # set_instance_assignment -name INPUT_DELAY_CHAIN 8 -to hb_rwds
+#
+# WHY NONE OF THEM SHIP HERE: the currently-shipped PHY uses CK_SCHEME="FABRIC2X",
+# whose header states CK edges "land at T/4 / 3T/4, centred in both byte eyes by
+# construction, NO PIN DELAY CHAIN NEEDED".                                    [HR-TOP]
+# The D5_DELAY block is dead code from the earlier CLK_DLY scheme.
+#
+# RE-ENABLE ONLY IF: Phase 3 switches the PHY to CK_SCHEME="CLK_DLY" — and then
+# FIRST compile with the candidate names present and grep the Quartus fit log for
+# ignored/unknown-assignment warnings to learn which name Agilex 3 accepts.
+
+#------------------------------------------------------------------------------
+# 2d. Drive strength / slew / termination — INTENTIONALLY NOT SET
+#------------------------------------------------------------------------------
+# No source in this repo (schematic, vendored core, or Blinky) specifies a
+# CURRENT_STRENGTH, SLEW_RATE, OUTPUT_TERMINATION, INPUT_TERMINATION or OCT value
+# for any HyperRAM pin. hyperbus_pads_altera.sv says "I/O standard / slew /
+# termination come from the .qsf pin assignments (pins.tcl, 1.2 V)" — and
+# pins.tcl sets ONLY IO_STANDARD. These knobs therefore default, exactly as in
+# the 175 MHz bitstream that passes on silicon.
+#
+# The enabling board fact, for whoever does have the data: bank 3A brings out its
+# OCT calibration reference at E14 = RZQ_B_3A, terminated by R52 = 240 Ohm 1% to
+# GND. (Bank 2A likewise: AD3 = RZQ_B_2A, R47 240 Ohm 1%.)                     [SCH-p7] [SCH-p6]
+# On-chip termination is thus PHYSICALLY AVAILABLE on the HyperRAM bank. Using it
+# responsibly needs the TEI0131 layout trace-impedance / length-matching data,
+# which is not in the schematic PDF. Until then: defaults. See BOARD_PINOUT.md Q3.
+
+#==============================================================================
+# 3. FTDI UART — FT2232H (U30) channel B, FPGA bank 5A, 3.3 V
+#==============================================================================
+# VCCIO_HVIO_5A (AD22, AE21) = 3.3 V.                                          [SCH-p8]
+# BDBUS0 = U30 pin 32 = FTDI TXD (FTDI -> FPGA)  => FPGA RX, ball AG23         [SCH-p8] [SCH-p14]
+# BDBUS1 = U30 pin 33 = FTDI RXD (FPGA -> FTDI)  => FPGA TX, ball AG24         [SCH-p8] [SCH-p14]
+# BDBUS2..7 are explicit no-connects. No level shifter, no series/pull resistors
+# on either UART line. Direction mapping is silicon-proven by [BLINKY].
+# (R19/R20/R29 2k near channel B on [SCH-p14] belong to an FTDI-side status RGB
+#  LED on ACBUS5/6/7 — they are NOT on the UART lines.)
+# HVIO_5A_7,  net BDBUS0
+set_location_assignment PIN_AG23 -to UART_RX
+# HVIO_5A_14, net BDBUS1
+set_location_assignment PIN_AG24 -to UART_TX
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to UART_RX
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to UART_TX
+
+#==============================================================================
+# 4. User LEDs — ALL ACTIVE LOW (drive 0 to light)
+#==============================================================================
+# Each LED anode -> 2 kOhm 1% -> 3.3 V rail; cathode -> FPGA pin.              [SCH-p3]
+#   LED1_N : D10, red 19-213/R6C-AL1M2VY/3T, via R8  2k  -> ball AG21, bank 5A
+#   RLED_N : D2C, RGB CLY6D-FKC-CK1N1D1BB7D3D3, via R9  2k -> ball AH22, bank 5A
+#   GLED_N : D2B, same RGB part,                via R10 2k -> ball AK21, bank 5B
+#   BLED_N : D2A, same RGB part,                via R11 2k -> ball AK20, bank 5B
+# NOTE the RGB LED straddles TWO banks (R in 5A; G,B in 5B). Both are 3.3 V
+# (VCCIO_HVIO_5A @ AD22/AE21 and VCCIO_HVIO_5B @ AB21/AC21), so this is invisible
+# to the constraints today — but it matters if either bank's VCCIO ever changes.
+#                                                          [SCH-p8] [SCH-p3] [BLINKY]
+# (D1, a green LED on [SCH-p3], is a power indicator wired to GND — not FPGA driven.)
+# bank 5A, HVIO_5A_6
+set_location_assignment PIN_AH22 -to RLED_N
+# bank 5B, HVIO_5B_19
+set_location_assignment PIN_AK21 -to GLED_N
+# bank 5B, HVIO_5B_16
+set_location_assignment PIN_AK20 -to BLED_N
+# bank 5A, HVIO_5A_12
+set_location_assignment PIN_AG21 -to LED1_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to RLED_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to GLED_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to BLED_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to LED1_N
+
+# Vendored HyperBus example uses un-suffixed LED names (LED1/RLED/GLED, no BLED).
+# Uncomment if you instantiate its top.sv unmodified.                          [HR-TOP]
+#   set_location_assignment PIN_AG21 -to LED1
+#   set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to LED1
+#   set_location_assignment PIN_AH22 -to RLED
+#   set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to RLED
+#   set_location_assignment PIN_AK21 -to GLED
+#   set_instance_assignment -name IO_STANDARD "3.3-V LVCMOS" -to GLED
+
+#==============================================================================
+# 5. Optional: USER button (S2) — not used by this project
+#==============================================================================
+# A12 = IO7, DIFF_IO_3A_B21N, DQ15, bank 3A (1.2 V). Active low.  [SCH-p7] [HR-PINS]
+# The vendored build enables an internal weak pull-up on it.
+#   set_location_assignment PIN_A12 -to USER_BTN
+#   set_instance_assignment -name IO_STANDARD "1.2 V" -to USER_BTN
+#   set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to USER_BTN
+# Also available on bank 3A: SW1 = A13 (IO11), SW0 = A14 (IO9).                [SCH-p7]
+
+#==============================================================================
+# 6. JTAG and configuration — NO ASSIGNMENTS NEEDED (dedicated pins)
+#==============================================================================
+# These are DEDICATED SDM-bank pins. Quartus assigns them from DEVICE; adding a
+# set_location_assignment for any of them is an ERROR. Listed for reference only.
+# VCCIO_SDM (Y17, AD15) = 1.8 V.                                               [SCH-p5]
+#
+#   TCK       AF16   net JTAG_TCK  -> FT2232H U30 ADBUS0        [SCH-p5] [SCH-p14]
+#   TDI       AE17   net JTAG_TDI  -> FT2232H U30 ADBUS1
+#   TDO       AE16   net JTAG_TDO  -> FT2232H U30 ADBUS2
+#   TMS       AF17   net JTAG_TMS  -> FT2232H U30 ADBUS3
+#   nCONFIG   AG15   R46 10k -> 1.8 V
+#   nSTATUS   AG16   R49 10k -> 1.8 V
+#   OSC_CLK_1 AG11   net CLK_25M, DIRECT from XO U12 pin 3 (no AC coupling on this leg)
+#   MSEL0     AH12   SDM_IO5 / AS_NCSO0,  R60 4k7 -> 1.8 V
+#   MSEL1     AK10   SDM_IO7 / AS_NCSO2,  R62 10k -> 1.8 V
+#   MSEL2     AJ9    SDM_IO9 / AS_NCSO1,  R63 10k -> 1.8 V
+#
+# Boot-mode table printed on [SCH-p5]  (MSEL2, MSEL1, MSEL0):
+#     JTAG only          1 1 1     <-- BOARD DEFAULT (all three pulled high)
+#     AS (Normal mode)   0 1 1
+# Phase 4 USB-C JTAG programming needs no strap change. Booting standalone from
+# flash would require pulling MSEL2 low — a board mod, since R63 is a hard 10k.
+#
+# Config flash: U13 = MT25QU256ABA8E12-1SIT, 256 Mbit = 32 MB, 1.8 V, on the SDM
+# Active-Serial pins AS_CLK / AS_DATA[3:0] / AS_NCS_MSEL0 / AS_NRST.            [SCH-p5]
+#
+# Cable: ONE USB-C 2.0 connector J9 -> FT2232H U30. Channel A = JTAG
+# (USB-Blaster class), channel B = the UART of section 3.                      [SCH-p14]
+
+#==============================================================================
+# 7. Bank voltages (verified — do not assume)
+#==============================================================================
+#   Bank 3A  VCCIO_PIO_3A_T (G12,H11) = 1.2 V ; VCCIO_PIO_3A_B (G14,H13) = 1.2 V  [SCH-p7]
+#   Bank 5A  VCCIO_HVIO_5A  (AD22,AE21)       = 3.3 V                             [SCH-p8]
+#   Bank 5B  VCCIO_HVIO_5B  (AB21,AC21)       = 3.3 V                             [SCH-p8]
+#   SDM      VCCIO_SDM      (Y17,AD15)        = 1.8 V                             [SCH-p5]
+#   Bank 2A  VCCIO_PIO_2A_*                   = VADJ — FPGA-SWITCHABLE via net
+#            VSEL_1V3, driven from FPGA pin AJ24 (bank 5A) through a
+#            BSD840NH6327 load-switch pair (R37 1k 1%).       [SCH-p6] [SCH-p15] [SCH-p8]
+#            *** Do NOT place any signal in bank 2A without first deciding and
+#                constraining VSEL_1V3. Nothing in this project uses bank 2A. ***
+#
+# Caution carried forward: the FPGA symbol sheets [SCH-p5] and [SCH-p8] carry the
+# Trenz internal annotation "A3CY100BM16AE7S NOT CHECKED!!!". Every pin in this
+# file was cross-checked against at least one silicon-proven build, but any
+# UNPROVEN pin taken from those sheets deserves a bench check before first use.
+
+#==============================================================================
+# 8. Timing-constraint reminders (belong in the .sdc, listed here for traceability)
+#==============================================================================
+#   create_clock -name CLK_25M -period 40.000 [get_ports CLK_25M]              ;# [HR-QSF] bw.sdc
+#   derive_pll_clocks ; derive_clock_uncertainty
+#
+#   hb_ck is an OUTPUT ONLY — it is not a clock INTO the FPGA; the device echoes
+#   it back as RWDS, which the PHY recaptures. No hb_ck clock object is needed
+#   inside the FPGA.                                                            [HR-QSF] bw.sdc
+#
+#   The vendored build FALSE-PATHS the whole HyperBus interface, treating
+#   off-chip closure as a bench task:
+#     set_false_path -to   [get_ports {hb_dq[*] hb_rwds hb_cs_n hb_ck hb_rst_n}]
+#     set_false_path -from [get_ports {hb_dq[*] hb_rwds}]
+#   LEDs are slow status indicators and are cut from timing too.
+#
+#   Practical CK ceiling on THIS board: ~176 MHz (2x fabric CK generator
+#   min-pulse limit). 200 MHz fits and paces ~384-390 MB/s but shows a
+#   page-crossing bit artifact. Device is the 4 ns / 250 MHz speed grade;
+#   reaching it needs differential CK => board respin.          [HR-RDME] [HR-ROOT]
+#   Budget ~350 MB/s (x8 DDR at 175 MHz = 2 x 175 M x 1 B), not 500 MB/s.
+#==============================================================================
