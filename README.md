@@ -29,8 +29,8 @@ an Agilex 3 board we own, and extend the work toward Agilex 7 and MXFP4 LLM infe
 
 ## Headline findings so far
 
-- Measured on silicon: the paper's E2M1 tensor-mode dot product is bit-exact on an Agilex 3
-  A3CY100 (64/64 vectors, 240 MHz, 11-cycle latency). The paper itself never ran on hardware.
+- Measured on silicon: the paper's E2M1 and E2M3 tensor-mode dot products are bit-exact on an
+  Agilex 3 A3CY100 (64/64 vectors each, 240 MHz, 11-cycle latency). The paper itself never ran on hardware.
 - All 12 of the paper's DSP-based designs fit Agilex 3 within 3% of the paper's Agilex 5 ALM
   counts; the Agilex 5 numbers reproduce under Quartus 26.1.
 - Agilex 27 (announced 28 Oct 2026) has a second-generation tensor block with two 16-element

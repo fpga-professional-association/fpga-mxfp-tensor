@@ -57,7 +57,7 @@ The paper never runs on a board. We can, for the formats the baseline tensor mod
 4. [x] E2M1 bit-exact on silicon, 64/64 vectors, 240.1 MHz measured, latency 11 cycles.
        Tensor-mode restricted fmax on the -7 part is 342.94 MHz.
 5. [x] Device-fill peak at 343 MHz: 1.49 TFLOPS MXFP4. One unit measured at 30.7 GFLOPS.
-6. [ ] E2M3 on silicon (build in progress).
+6. [x] E2M3 on silicon: 64/64 bit-exact, 240.1 MHz, latency 11.
 7. [ ] Register the harness RAM reads (it uses 19K ALMs as flops today) and sweep the DUT PLL
        to find the real on-silicon fmax of the dot unit.
 

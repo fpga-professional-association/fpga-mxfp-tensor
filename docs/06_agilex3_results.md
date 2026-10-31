@@ -21,7 +21,7 @@ paper never ran on hardware; this is the first silicon confirmation of its Secti
 | DSP blocks for the dot unit | 4 (same as the paper) |
 | Throughput of one unit | 2 x 32 x 2 x 240e6 = 30.7 GFLOPS |
 | Device fill at the standalone unit fmax (343 MHz, 34 units) | 1.49 TFLOPS peak |
-| E2M3 | see bottom of file |
+| E2M3 (MXFP6) | 64/64 bit-exact, 240.1 MHz, latency 11, same harness with M = 3 |
 
 ## What it took to make it run
 
@@ -115,4 +115,11 @@ identical 458 MHz across formats already suggested.
 
 ## E2M3 on silicon
 
-Pending at the time of writing; the build with `M = 3` and the E2M3 golden data are in place.
+Same harness rebuilt with `M = 3` (`agilex3/board/results/e2m3_240/`), timing clean at 240 MHz
+after declaring the PLL reference domain asynchronous (setup slack +0.006 ns on the DUT clock).
+Measured: 64/64 E2M3 vector pairs bit-exact in MODE 3 and MODE 7, 240.1 MHz, latency 11 cycles,
+4 DSP blocks. Records: `results/e2m3_mode3.json`, `results/e2m3_mode7.json`.
+
+Both formats the paper maps to the tensor mode are therefore confirmed on silicon. E3M2 and
+MXFP8 cannot use this path, exactly as the paper argues, because their pre-aligned values exceed
+the 8-bit lane.
