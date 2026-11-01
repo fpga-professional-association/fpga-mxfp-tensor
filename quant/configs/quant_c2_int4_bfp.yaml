@@ -1,0 +1,7 @@
+name: c2_int4_bfp
+description: "C2 INT4-BFP W4A8 (custom)"
+weight_fmt: int4_bfp
+activation_fmt: int8_bfp
+group_size: 32
+act_scale_mode: dynamic_per_token
+w8_budgets: [0.05, 0.10, 0.20, 0.40]

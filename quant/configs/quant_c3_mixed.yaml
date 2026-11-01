@@ -1,0 +1,7 @@
+name: c3_mixed
+description: "C3 mixed W4/W8-A8, per-layer allocation by sensitivity"
+weight_fmt: mixed
+activation_fmt: int8_bfp
+group_size: 32
+act_scale_mode: dynamic_per_token
+w8_budgets: [0.05, 0.10, 0.20, 0.40]

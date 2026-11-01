@@ -1,0 +1,10 @@
+{
+ "model": "Qwen/Qwen2.5-1.5B-Instruct",
+ "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+ "transformers": "5.22.1",
+ "torch": "2.11.0+cu128",
+ "device": "NVIDIA GeForce RTX 5070",
+ "eval_tokens": 65536,
+ "seqlen": 1024,
+ "eval_text_sha256": "a5ad4cecd3be1e36976af011f979f633bf67839fee3df40b4cfa8866a59c3a34"
+}

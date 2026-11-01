@@ -1,0 +1,13 @@
+# Spec AGX5-MXQ-001 section 5.2. Revision SHAs are recorded by python/evaluate.py into manifests/.
+model: Qwen/Qwen2.5-1.5B-Instruct
+alt_model: Qwen/Qwen3-1.7B
+quantized_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+kept_bf16: [embed_tokens, lm_head, norm, rotary]
+group_size: 32
+eval:
+  dataset: Salesforce/wikitext wikitext-2-raw-v1 test
+  seqlen: 1024
+  tokens: 65536
+calibration:
+  sequences: 512
+  seqlen: 1024

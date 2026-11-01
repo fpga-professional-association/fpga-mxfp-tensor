@@ -32,6 +32,8 @@ set_global_assignment -name IP_FILE ../qsys/ip/mx_shell/mx_shell_clkb_dut.ip
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/mxfp_harness.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/bfp_dot.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/fxp_dot.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../quant/rtl/mxq_decoders.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../upstream/fpga-mxfp/characterization/ai_tensor_block/rtl/fp_aitb.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../upstream/fpga-mxfp/characterization/ai_tensor_block/rtl/mxfp_dot.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../upstream/fpga-mxfp/characterization/ai_tensor_block/rtl/pipeline.sv
@@ -41,4 +43,4 @@ set_global_assignment -name SDC_FILE top.sdc
 set_parameter -name E 2
 set_parameter -name M 3
 set_parameter -name PIPE 1
-set_parameter -name DUT_KIND 1
+set_parameter -name DUT_KIND 2

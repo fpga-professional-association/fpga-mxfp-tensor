@@ -1,0 +1,7 @@
+name: c1_mxfp4
+description: "C1 MXFP4 E2M1 W4A4 (OCP element and scale encoding)"
+weight_fmt: mxfp4
+activation_fmt: mxfp4
+group_size: 32
+act_scale_mode: dynamic_per_token
+w8_budgets: [0.05, 0.10, 0.20, 0.40]

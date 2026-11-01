@@ -1,0 +1,7 @@
+name: c0_int8_bfp
+description: "C0 INT8-BFP W8A8 (FP12AGX-inspired custom reference)"
+weight_fmt: int8_bfp
+activation_fmt: int8_bfp
+group_size: 32
+act_scale_mode: dynamic_per_token
+w8_budgets: [0.05, 0.10, 0.20, 0.40]

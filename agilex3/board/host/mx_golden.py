@@ -51,9 +51,31 @@ def main():
     ap.add_argument("--k", type=int, default=32)
     ap.add_argument("--out", default="data.tcl")
     ap.add_argument("--bfp", type=int, default=0, help="block-FP mode: weights are signed WBITS-bit ints, activations int8, both sign-extended to 8-bit lanes")
+    ap.add_argument("--mxfp4_lanes", action="store_true", help="C1 via raw lanes: E2M1 x E2M1 vectors presented as decoded q=2*value int8 lanes with shared exponent X-1 (host-side decode)")
     a = ap.parse_args()
     rnd = random.Random(a.seed)
-    if a.bfp:
+    if a.mxfp4_lanes:
+        # MXFP4 x MXFP4 with the E2M1 decode done on the host: lanes q = 2*value, exponent X - 1.
+        w = 8
+        codes1, codes2 = [rnd.randrange(16) for _ in range(a.k)], [rnd.randrange(16) for _ in range(a.k)]
+        x1, x2 = rnd.randrange(120, 135), rnd.randrange(120, 135)
+        q_of = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 6, 6: 8, 7: 12}
+        def dec(c):
+            q = q_of[c & 7]; return -q if c & 8 else q
+        w1 = [dec(c) & 0xFF for c in codes1]; w2 = [dec(c) & 0xFF for c in codes2]
+        def sval(c): return c - 256 if c >= 128 else c
+        acts, xas, exp1, exp2 = [], [], [], []
+        for _ in range(a.nvec):
+            ac = [rnd.randrange(16) for _ in range(a.k)]; xa = rnd.randrange(120, 135)
+            av = [dec(c) & 0xFF for c in ac]
+            acts.append(av); xas.append(xa - 1)
+            d1 = sum(sval(w1[j]) * sval(av[j]) for j in range(a.k)); d2 = sum(sval(w2[j]) * sval(av[j]) for j in range(a.k))
+            # value = q*2^-1 each side, scales 2^(X-127): total 2^((x1-1)-127 + (xa-1)-127)
+            exp1.append(to_fp32_bits(Fraction(d1) * Fraction(2) ** ((x1 - 1) - 127 + (xa - 1) - 127)))
+            exp2.append(to_fp32_bits(Fraction(d2) * Fraction(2) ** ((x2 - 1) - 127 + (xa - 1) - 127)))
+        x1, x2 = x1 - 1, x2 - 1
+        kind, efield, mfield = 1, 2, 1
+    elif a.bfp:
         w = 8
         wb = a.bfp
         def rand_w():  # signed WBITS-bit ints, two's complement in 8-bit lanes

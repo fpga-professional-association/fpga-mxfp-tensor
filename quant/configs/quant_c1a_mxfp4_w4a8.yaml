@@ -1,0 +1,7 @@
+name: c1a_mxfp4_w4a8
+description: "C1a ablation: MXFP4 weights, INT8-BFP activations"
+weight_fmt: mxfp4
+activation_fmt: int8_bfp
+group_size: 32
+act_scale_mode: dynamic_per_token
+w8_budgets: [0.05, 0.10, 0.20, 0.40]

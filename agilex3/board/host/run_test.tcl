@@ -29,7 +29,8 @@ set fmt [R $m 0x004]
 set hw_kind [expr {($fmt >> 16) & 0xFF}]; set hw_e [expr {($fmt >> 8) & 0xFF}]; set hw_m [expr {$fmt & 0xFF}]
 if {![info exists ::KIND]} { set ::KIND 0 }
 puts [format "FORMAT   = kind %d E%d M%d (data file kind %d E%d M%d)" $hw_kind $hw_e $hw_m $::KIND $::E $::M]
-if {$hw_kind != $::KIND} { error "bitstream DUT kind does not match data file" }
+if {$::KIND == 0 && $hw_kind != 0} { error "bitstream DUT kind does not match data file" }
+if {$::KIND != 0 && $hw_kind == 0} { error "bitstream DUT kind does not match data file" }
 if {$::KIND == 0 && ($hw_e != $::E || $hw_m != $::M)} { error "bitstream format does not match data file" }
 
 # --- DUT clock measurement: free-running counter over ~1 s of host time

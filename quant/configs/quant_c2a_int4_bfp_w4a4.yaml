@@ -1,0 +1,7 @@
+name: c2a_int4_bfp_w4a4
+description: "C2a ablation: INT4-BFP W4A4"
+weight_fmt: int4_bfp
+activation_fmt: int4_bfp
+group_size: 32
+act_scale_mode: dynamic_per_token
+w8_budgets: [0.05, 0.10, 0.20, 0.40]
