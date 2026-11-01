@@ -99,24 +99,30 @@ module mxq_scale_apply (
     e_q   <= e;
     lz_q  <= clz32(s[31] ? -s : s);
   end
-  // stage 2: normalize to 1.xxx (bit 31), round to 24 bits RNE, assemble
-  logic [31:0] norm; logic [24:0] m25, m25r; logic [7:0] rest; logic round_up; logic signed [10:0] be;
+  // stage 2: normalize (MSB to bit 31); stage 3: round to 24 bits RNE and assemble
+  logic        sgn_n; logic [31:0] norm_n; logic signed [10:0] be0_n; logic v_n; logic zero_n;
+  always_ff @(posedge clk) begin
+    v_n    <= v_q;
+    sgn_n  <= sgn_q;
+    zero_n <= (mag_q == 0);
+    norm_n <= mag_q << lz_q;
+    be0_n  <= 11'sd127 + 11'sd31 - $signed({5'd0, lz_q}) + e_q;
+  end
+  logic [24:0] m25, m25r; logic [7:0] rest; logic round_up; logic signed [10:0] be;
   always_comb begin
-    norm     = mag_q << lz_q;                          // MSB at bit 31
-    m25      = {1'b0, norm[31:8]};                     // 24 significant bits
-    rest     = norm[7:0];                              // discarded bits
-    round_up = rest[7] & (|rest[6:0] | m25[0]);        // RNE
-    m25r     = m25 + {24'd0, round_up};                // may carry into bit 24
-    be       = 11'sd127 + 11'sd31 - $signed({5'd0, lz_q}) + e_q + (m25r[24] ? 11'sd1 : 11'sd0);
+    m25      = {1'b0, norm_n[31:8]};
+    rest     = norm_n[7:0];
+    round_up = rest[7] & (|rest[6:0] | m25[0]);
+    m25r     = m25 + {24'd0, round_up};
+    be       = be0_n + (m25r[24] ? 11'sd1 : 11'sd0);
     if (m25r[24]) m25r = m25r >> 1;
   end
   always_ff @(posedge clk) begin
-    valid_out <= v_q;
-    if (mag_q == 0) begin
-      fp32 <= {sgn_q, 31'd0}; ovf <= 0; unf <= 0;
-    end else if (be >= 11'sd255) begin fp32 <= {sgn_q, 8'hFF, 23'd0}; ovf <= 1; unf <= 0; end
-    else if (be <= 11'sd0) begin fp32 <= {sgn_q, 31'd0}; ovf <= 0; unf <= 1; end
-    else begin fp32 <= {sgn_q, be[7:0], m25r[22:0]}; ovf <= 0; unf <= 0; end
+    valid_out <= v_n;
+    if (zero_n) begin fp32 <= {sgn_n, 31'd0}; ovf <= 0; unf <= 0; end
+    else if (be >= 11'sd255) begin fp32 <= {sgn_n, 8'hFF, 23'd0}; ovf <= 1; unf <= 0; end
+    else if (be <= 11'sd0) begin fp32 <= {sgn_n, 31'd0}; ovf <= 0; unf <= 1; end
+    else begin fp32 <= {sgn_n, be[7:0], m25r[22:0]}; ovf <= 0; unf <= 0; end
   end
 endmodule
 

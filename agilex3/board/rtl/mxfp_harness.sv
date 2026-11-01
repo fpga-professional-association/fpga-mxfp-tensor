@@ -87,7 +87,7 @@ module mxfp_harness #(
   logic [IDXW:0] nvec;
   logic [31:0]   cycles;
   logic [63:0]   free_cnt;
-  logic [7:0]    mode;
+  logic [8:0]    mode;
   logic          err_overrun;
   logic          start_q, dut_rst_req;
 
@@ -96,13 +96,14 @@ module mxfp_harness #(
   wire mode_loada_z   = mode[2];
   wire mode_swap      = mode[3];
   wire [3:0] mode_rst = mode[7:4];
+  wire mode_raw = mode[8];          // DUT_KIND 2 only: raw int32 sums on the output ports
 
   // ------------------------------------------------------------------ Avalon write
   always_ff @(posedge clk) begin
     start_q     <= 1'b0;
     dut_rst_req <= 1'b0;
     if (!rst_n) begin
-      nvec <= 'd1; mode <= 8'h03;
+      nvec <= 'd1; mode <= 9'h003;
       w_col1 <= '0; w_col2 <= '0; e_col1 <= 8'd127; e_col2 <= 8'd127;
     end else if (av_write) begin
       case (av_address[10:8])
@@ -110,7 +111,7 @@ module mxfp_harness #(
           case (av_address[7:0])
             8'h01: begin start_q <= av_writedata[0]; dut_rst_req <= av_writedata[1]; end
             8'h03: nvec <= av_writedata[IDXW:0];
-            8'h08: mode <= av_writedata[7:0];
+            8'h08: mode <= av_writedata[8:0];
             default: ;
           endcase
         end
@@ -157,7 +158,7 @@ module mxfp_harness #(
           7'h05: rd_mux = cycles;
           7'h06: rd_mux = free_cnt[31:0];
           7'h07: rd_mux = free_cnt[63:32];
-          7'h08: rd_mux = {24'd0, mode};
+          7'h08: rd_mux = {23'd0, mode};
           default: rd_mux = 32'h0;
         endcase
       end
@@ -329,7 +330,7 @@ module mxfp_harness #(
   end else if (DUT_KIND == 2) begin : g_fxp
     fxp_dot #(.PIPE(PIPE), .DOT_LEN(DOT_LEN)) dut (
       .clk(clk), .rst(dut_rst), .load_en(dut_load_al), .valid_in(dut_valid_al),
-      .int8_in(mx_data_in), .shared_exponent(dut_exp),
+      .int8_in(mx_data_in), .shared_exponent(dut_exp), .raw_out(mode_raw),
       .fp32_dot_out_col1(dut_out1), .fp32_dot_out_col2(dut_out2), .valid_out(dut_valid_out),
       .fp32_flags_col1(), .fp32_flags_col2());
   end else begin : g_bfp

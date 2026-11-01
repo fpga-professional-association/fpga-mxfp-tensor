@@ -10,12 +10,12 @@
 //
 // Latency: data to int32 sum through the 4-block cascade is the same 11 cycles as the FP mode
 // (5 per block input-to-output, 2 per cascade hop, blocks staggered by 2), then 2 cycles for
-// the fabric scale, so valid_out is 13 cycles after valid_in. Verified on silicon via the trace.
+// the fabric scale (3 stages), so valid_out is 13 cycles after valid_in. Verified on silicon via the trace.
 `default_nettype none
 module fxp_dot #(
   parameter int PIPE = 1,
   parameter int DOT_LEN = 32,
-  parameter int FXP_LAT = 11
+  parameter int FXP_LAT = 10   // measured on silicon: one cycle less than the FP cascade (no fp32 add stage)
 ) (
   input  wire        clk,
   input  wire        rst,
@@ -23,6 +23,7 @@ module fxp_dot #(
   input  wire        valid_in,
   input  wire [7:0]  int8_in [0:DOT_LEN-1],
   input  wire [7:0]  shared_exponent,
+  input  wire        raw_out,          // debug: output the raw int32 sums instead of fp32
   output wire [31:0] fp32_dot_out_col1,
   output wire [31:0] fp32_dot_out_col2,
   output wire        valid_out,
@@ -68,7 +69,7 @@ module fxp_dot #(
   end
 
   // ---- 4-block tensor fixed-point cascade (data_feed_in preload like the paper's design)
-  fxp_aitb_blk #(.CHAIN_MODE("zero_tensor_chain_output")) dot0 (
+  fxp_aitb_blk #(.CHAIN_MODE("zero_tensor_chain_output"), .ZERO_EN(1)) dot0 (
     .clk(clk), .rst(rst), .load_en(ld), .data_in(d[0:9]),
     .cascade_in_col_1(32'd0), .cascade_in_col_2(32'd0),
     .cascade_out_col_1(casc1[0]), .cascade_out_col_2(casc2[0]), .res_col_1(), .res_col_2());
@@ -99,9 +100,16 @@ module fxp_dot #(
   wire signed [9:0] e1 = $signed({2'b0, ew_col1}) + $signed({2'b0, ea_al}) - 10'sd254;
   wire signed [9:0] e2 = $signed({2'b0, ew_col2}) + $signed({2'b0, ea_al}) - 10'sd254;
   logic ovf1, unf1, ovf2, unf2, vo1, vo2;
-  mxq_scale_apply SA1 (.clk(clk), .valid_in(v_al), .s(s1), .e(e1), .fp32(fp32_dot_out_col1), .valid_out(vo1), .ovf(ovf1), .unf(unf1));
-  mxq_scale_apply SA2 (.clk(clk), .valid_in(v_al), .s(s2), .e(e2), .fp32(fp32_dot_out_col2), .valid_out(vo2), .ovf(ovf2), .unf(unf2));
-  assign valid_out = vo1;
+  mxq_scale_apply SA1 (.clk(clk), .valid_in(v_al), .s(s1), .e(e1), .fp32(fp1), .valid_out(vo1), .ovf(ovf1), .unf(unf1));
+  mxq_scale_apply SA2 (.clk(clk), .valid_in(v_al), .s(s2), .e(e2), .fp32(fp2), .valid_out(vo2), .ovf(ovf2), .unf(unf2));
+  logic [31:0] s1_d, s2_d; logic v_d;
+  logic [31:0] fp1, fp2;
+  pipeline #(.W(32), .STAGES(3)) PS1 (.clk(clk), .rst(rst), .pipe_in(s1), .pipe_out(s1_d));
+  pipeline #(.W(32), .STAGES(3)) PS2 (.clk(clk), .rst(rst), .pipe_in(s2), .pipe_out(s2_d));
+  pipeline #(.W(1),  .STAGES(3)) PVD (.clk(clk), .rst(rst), .pipe_in(v_al), .pipe_out(v_d));
+  assign fp32_dot_out_col1 = raw_out ? s1_d : fp1;
+  assign fp32_dot_out_col2 = raw_out ? s2_d : fp2;
+  assign valid_out = raw_out ? v_d : vo1;
   assign fp32_flags_col1 = {2'b0, unf1, ovf1};
   assign fp32_flags_col2 = {2'b0, unf2, ovf2};
 endmodule
@@ -109,7 +117,8 @@ endmodule
 // One Agilex tensor DSP block in fixed-point tensor mode with int32 cascade, data-feed preload.
 // Port and parameter usage follows the authors' fxp_aitb.sv and fp_aitb.sv (tennm_dsp_prime).
 module fxp_aitb_blk #(
-  parameter string CHAIN_MODE = "tensor_chain_output"
+  parameter string CHAIN_MODE = "tensor_chain_output",
+  parameter bit ZERO_EN = 0
 ) (
   input  wire        clk,
   input  wire        rst,
@@ -134,7 +143,7 @@ module fxp_aitb_blk #(
 
   tennm_dsp_prime tennm_dsp_prime_component (
     .clk(clk), .ena(1'b1),
-    .acc_en(1'b0), .zero_en(1'b0),
+    .acc_en(1'b0), .zero_en(ZERO_EN),
     .load_bb_one(load_en), .load_bb_two(1'b0), .load_buf_sel(1'b0),
     .clr({rst, rst}),
     .data_in(din),

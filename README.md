@@ -28,6 +28,9 @@ an Agilex 3 board we own, and extend the work toward Agilex 7 and MXFP4 LLM infe
 | `docs/04_mxfp4_model_fit.md` | Which models fit in MXFP4 on which Agilex part, and estimated decode rates. |
 | `docs/05_external_analysis_agilex_2x.md` | A separately produced deep-research note on Agilex 5/7/25/27 supplied by the user, with our verification notes. |
 | `docs/06_agilex3_results.md` | Measured results: the paper's designs on Agilex 3 silicon (AXC3000), plus the Agilex 5 reproduction under Quartus 26.1. |
+| `docs/07_external_quantization_formats.md` | Supplied note on Agilex-specific quantization formats, with our PTQ pilot and decoder-cost results. |
+| `docs/08_quant_benchmark_results.md` | Results of the AGX5-MXQ-001 benchmark spec: M1 conformance, M2 quality matrix on Qwen2.5-1.5B, M3 silicon variants, exports. |
+| `quant/` | Implementation of the AGX5-MXQ-001 spec: quantizers, oracles, model wrapper, sensitivity allocator, evaluation, exporter, decoder RTL and goldens. |
 | `docs/perf_model_output.txt` | Output of the model below at the time of writing. |
 | `reports/Agilex 2X series architecture.md` | Deep-research report on Altera's Agilex 2X (27 and 25) from the 28 Oct 2026 launch documents. |
 | `agilex3/char/` | Scripts that retarget the paper's characterization designs to any part; results CSVs. |
@@ -42,8 +45,11 @@ an Agilex 3 board we own, and extend the work toward Agilex 7 and MXFP4 LLM infe
 - All 12 of the paper's DSP-based designs fit Agilex 3 within 3% of the paper's Agilex 5 ALM
   counts; the Agilex 5 numbers reproduce under Quartus 26.1.
 - Block floating point without a decoder (W4A8-BFP, INT8-BFP) is also bit-exact on the board at
-  the same 4 DSPs and clock; the MXFP4 decoder costs no area. PTQ on Qwen2.5-0.5B says INT4-BFP
-  loses to MXFP4 at equal storage (21.8 vs 17.9 perplexity) and INT5-BFP (15.6) is the sweet spot.
+  the same 4 DSPs and clock; the MXFP4 decoder costs no area.
+- PTQ on Qwen2.5-1.5B-Instruct (spec AGX5-MXQ-001): only INT8-BFP W8A8 passes the +0.5 perplexity
+  gate; MXFP4 weights beat INT4-BFP weights at equal storage (12.39 vs 14.44 with INT8 activations);
+  INT5-BFP W5A8 (11.58 at 5.16 b/w) is the best accuracy per stored bit, and it uses the same DSP
+  lanes as MXFP4. W4A4 of any kind is poor (16.3 MXFP4, 26.2 INT4-BFP).
 - Agilex 27 (announced 28 Oct 2026) has a second-generation tensor block with two 16-element
   columns (32 INT8 multipliers), but Altera publishes no FP8, FP4 or MXFP support for it.
 

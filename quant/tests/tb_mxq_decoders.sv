@@ -63,7 +63,7 @@ module tb_mxq_decoders;
     fd = $fopen({dir, "scale_apply.hex"}, "r"); n = 0; sv_in = 0;
     while ($fscanf(fd, "%h %h %h %d %d", v[0], v[1], exp_f32, exp_ovf, exp_unf) == 5) begin
       s_in = v[0]; e_in = $signed(v[1][9:0]); sv_in = 1;
-      @(posedge clk); #0.1; sv_in = 0; @(posedge clk); #0.1;
+      @(posedge clk); #0.1; sv_in = 0; @(posedge clk); @(posedge clk); #0.1;
       if (!sv_out) begin errors++; $display("SCALE_APPLY #%0d: valid_out missing", n); end
       if (f32 !== exp_f32 || ovf !== exp_ovf[0] || unf !== exp_unf[0]) begin errors++; if (errors < 20) $display("SCALE_APPLY #%0d s=%0d e=%0d: got %h ovf%b unf%b exp %h %0d %0d", n, s_in, e_in, f32, ovf, unf, exp_f32, exp_ovf, exp_unf); end
       n++;

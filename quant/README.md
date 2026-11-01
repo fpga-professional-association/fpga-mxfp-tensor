@@ -45,7 +45,7 @@ Golden data: `mx_golden.py --bfp 4|8` (C2/C0 operands), `--mxfp4_lanes` (C1 with
 |---|---|
 | M0 locked environment | Model revision SHA, library versions and eval-text SHA written to `manifests/model_sha.json` by evaluate.py. Quartus 26.1.0 b110 (spec asked for 25.3; recorded). |
 | M1 quantizers and conformance | Done: 7 tests pass (16 codes, ties, clamps, 100k dot32 x 3 formats exact, packing, export round trip). |
-| M2 PTQ quality matrix | Running on Qwen2.5-1.5B-Instruct, WikiText-2, 65,536 tokens. Pilot on Qwen2.5-0.5B in `docs/07`. |
+| M2 PTQ quality matrix | Done on Qwen2.5-1.5B-Instruct (WikiText-2, 65,536 tokens): only INT8-BFP passes the +0.5 gate; INT5-BFP W5A8 is the best sub-6-bit format; INT4-BFP loses to MXFP4 at equal storage. Table in `docs/08_quant_benchmark_results.md`. |
 | M3 Quartus arithmetic microbenchmarks | V0 (paper), V3/V4 (`bfp_dot`) and V1 (`fxp_dot`) built; V0/V3/V4 bit-exact on silicon; V1 in test. Seeds and the 350/400/450/500 MHz sweep not yet run. V2, V5, V6 not started. |
 | M4 real weight replay | Not started. The harness takes 64 vectors per run; replaying model matrices needs the GEMM tile. |
 | M5 QAT / mixed precision | C3 allocation by sensitivity is in M2; QAT not started. |
