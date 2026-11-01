@@ -118,12 +118,11 @@ result.
        device fill instead of the single-instance fmax. This is the paper's acknowledged
        weakness and fixing it is mostly compute time.
 7. [ ] Agilex-specific quantization formats (from `07_external_quantization_formats.md`):
-   - [~] W4A8-BFP / INT8-BFP on silicon: `bfp_dot.sv` (paper's cascade, decoder removed),
-         golden `--bfp 4` and `--bfp 8`, one bitstream with `DUT_KIND = 1`. Standalone fit of
-         `bfp_dot` vs `mxfp_dot` on Agilex 3 and Agilex 5 gives the decoder's ALM cost.
-   - [~] PTQ accuracy: `scripts/quant_formats.py` fake-quantizes a small LLM's block linears to
-         INT8-BFP, MXFP4, INT4-BFP (groups 10/20/32/40) and INT5-BFP, perplexity on WikiText-2.
-         Answers "can INT4-BFP match MXFP4 at the same storage" to first order, no QAT.
+   - [x] W4A8-BFP / INT8-BFP on silicon: both 64/64 bit-exact at 240 MHz (`06`). Decoder-free
+         unit is 244 ALMs vs 199 for the paper's E2M1 unit, so the decoder is not an area cost.
+   - [x] PTQ accuracy (Qwen2.5-0.5B, WikiText-2): INT4-BFP g32 21.8 ppl vs MXFP4 17.9 at equal
+         4.25 b/w; INT4-BFP matches MXFP4 only at group 10 (4.8 b/w); INT5-BFP g32 15.6; INT8-BFP
+         lossless. Table in `07`. Answer: INT4-BFP does not match MXFP4 at equal storage without QAT.
    - [ ] QAT follow-up with Brevitas if INT4-BFP g32 is within ~5% perplexity of MXFP4.
    - [ ] Group size vs DSP tile: 32-element groups on 10-lane tiles vs 10/20/40-element groups;
          measure scale-handling ALMs and control complexity in the systolic array.

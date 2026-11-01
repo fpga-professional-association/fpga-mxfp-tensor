@@ -22,6 +22,8 @@ paper never ran on hardware; this is the first silicon confirmation of its Secti
 | Throughput of one unit | 2 x 32 x 2 x 240e6 = 30.7 GFLOPS |
 | Device fill at the standalone unit fmax (343 MHz, 34 units) | 1.49 TFLOPS peak |
 | E2M3 (MXFP6) | 64/64 bit-exact, 240.1 MHz, latency 11, same harness with M = 3 |
+| W4A8-BFP (INT4-BFP weights x INT8-BFP activations, no decoder) | 64/64 bit-exact, 240 MHz, latency 11 |
+| W8A8-BFP (INT8-BFP x INT8-BFP, Altera's native format) | 64/64 bit-exact, 240 MHz, latency 11 |
 
 ## What it took to make it run
 
@@ -123,3 +125,32 @@ Measured: 64/64 E2M3 vector pairs bit-exact in MODE 3 and MODE 7, 240.1 MHz, lat
 Both formats the paper maps to the tensor mode are therefore confirmed on silicon. E3M2 and
 MXFP8 cannot use this path, exactly as the paper argues, because their pre-aligned values exceed
 the 8-bit lane.
+
+## Block floating point without a decoder (W4A8-BFP and INT8-BFP) on silicon
+
+From the quantization note (`07_external_quantization_formats.md`): INT4-BFP and INT8-BFP operands
+are plain sign-extended int8 lanes to the tensor block, so `bfp_dot.sv` is the paper's cascade
+with the MXFP decoder removed, and one bitstream (`DUT_KIND = 1`, `results/bfp_240/`) covers both.
+Timing clean at 240 MHz (setup slack +0.056 ns).
+
+| Measured on AXC3000 | Weights | Activations | Vectors bit-exact | Clock | Latency |
+|---|---|---|---|---|---|
+| W4A8-BFP | signed 4-bit, shared E8M0 per 32 | signed 8-bit, shared E8M0 per 32 | 64 / 64 | 240.0 MHz | 11 |
+| W8A8-BFP | signed 8-bit, shared E8M0 per 32 | signed 8-bit, shared E8M0 per 32 | 64 / 64 | 240.1 MHz | 11 |
+
+Records: `results/w4a8_bfp_mode3.json`, `results/w8a8_bfp_mode3.json`. Golden: `mx_golden.py --bfp 4`
+and `--bfp 8` (exact integer dot product scaled by the two shared exponents, one fp32 rounding).
+
+Decoder cost, standalone fits of the dot unit (same SDC):
+
+| Unit | Agilex 3 ALMs / DSPs / MHz | Agilex 5 ALMs / DSPs / MHz |
+|---|---|---|
+| paper `mxfp_dot` E2M1 (MXFP4 decoder in) | 199 / 4 / 343 | 207 / 4 / 458 |
+| paper `mxfp_dot` E2M3 | 416 / 4 / 343 | 417 / 4 / 458 |
+| `bfp_dot` raw int8 lanes (no decoder) | 244 / 4 / 343 | 243 / 4 / 458 |
+
+The decoder-free unit is not smaller. The MXFP4 path pipelines 4-bit elements and widens to 8-bit
+lanes at the DSP input; the raw path pipelines 8-bit lanes through every stage. The E2M1 decoder is
+a few LUTs per element. So on the tensor block the choice between MXFP4, INT4-BFP and INT8-BFP is a
+memory-format and accuracy choice (see the PTQ table in `07`), not an arithmetic or area one: all
+three run at 4 DSPs per two dot-32 and the same clock.

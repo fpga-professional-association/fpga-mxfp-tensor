@@ -33,6 +33,9 @@ an Agilex 3 board we own, and extend the work toward Agilex 7 and MXFP4 LLM infe
   Agilex 3 A3CY100 (64/64 vectors each, 240 MHz, 11-cycle latency). The paper itself never ran on hardware.
 - All 12 of the paper's DSP-based designs fit Agilex 3 within 3% of the paper's Agilex 5 ALM
   counts; the Agilex 5 numbers reproduce under Quartus 26.1.
+- Block floating point without a decoder (W4A8-BFP, INT8-BFP) is also bit-exact on the board at
+  the same 4 DSPs and clock; the MXFP4 decoder costs no area. PTQ on Qwen2.5-0.5B says INT4-BFP
+  loses to MXFP4 at equal storage (21.8 vs 17.9 perplexity) and INT5-BFP (15.6) is the sweet spot.
 - Agilex 27 (announced 28 Oct 2026) has a second-generation tensor block with two 16-element
   columns (32 INT8 multipliers), but Altera publishes no FP8, FP4 or MXFP support for it.
 
@@ -51,7 +54,7 @@ an Agilex 3 board we own, and extend the work toward Agilex 7 and MXFP4 LLM infe
 ## Getting started
 
 ```
-git clone --recurse-submodules https://github.com/tcovert2015/fpga-mxfp-tensor
+git clone --recurse-submodules https://github.com/fpga-professional-association/fpga-mxfp-tensor
 python scripts/perf_model.py
 ```
 
