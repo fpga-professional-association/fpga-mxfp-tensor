@@ -1,7 +1,15 @@
 # fpga-mxfp-tensor
 
-Reproduction and extension of "Jack of All Scales: A Versatile FPGA Tensor Block for MXFP
-Precisions" (Mekhemer et al., Waterloo/Toronto, arXiv 2607.13898, July 2026).
+Reproduction and extension of the paper
+
+> Marwan Mekhemer, Ahmed Elsousy, Balaji Venkatesh, Raphael Rowley, Vaughn Betz, Nachiket Kapre
+> and Andrew Boutros. "Jack of All Scales: A Versatile FPGA Tensor Block for MXFP Precisions."
+> arXiv:2607.13898 [cs.AR], 15 July 2026. https://arxiv.org/abs/2607.13898
+
+by the University of Waterloo and the University of Toronto. The authors' RTL, scripts and ASIC
+reports are their work, released under the MIT license at
+https://github.com/boutros-lab/fpga-mxfp and included here unmodified as a git submodule. All
+measurements in this repository that use their designs are measurements of their designs.
 
 The paper characterizes five ways to compute 32-element MXFP dot products on an Altera Agilex 5
 and proposes a modified DSP tensor mode that natively handles MXFP4, MXFP6, and MXFP8 E4M3 for a
@@ -60,3 +68,32 @@ python scripts/perf_model.py
 
 Quartus Prime Pro 26.1 is at `C:\altera_pro\26.1`. Questa Intel FPGA Starter Edition is needed
 for the upstream simulations and is not yet installed. See the plan for the rest.
+
+## Citation and attribution
+
+If you use anything from this repository, cite the paper first:
+
+```bibtex
+@article{mekhemer2026jackofallscales,
+  title   = {Jack of All Scales: A Versatile {FPGA} Tensor Block for {MXFP} Precisions},
+  author  = {Mekhemer, Marwan and Elsousy, Ahmed and Venkatesh, Balaji and Rowley, Raphael and
+             Betz, Vaughn and Kapre, Nachiket and Boutros, Andrew},
+  journal = {arXiv preprint arXiv:2607.13898},
+  year    = {2026},
+  month   = jul,
+  url     = {https://arxiv.org/abs/2607.13898}
+}
+```
+
+The authors' code: boutros-lab/fpga-mxfp, MIT license, vendored at `upstream/fpga-mxfp`. The
+dot-product units, systolic arrays and proposed DSP block RTL measured here are theirs.
+
+What is ours: the Agilex 3 retarget scripts, the AXC3000 board harness and shell, the golden
+model and System Console driver, the decoder-free `bfp_dot.sv` variant, the throughput and
+LLM-fit model, the PTQ format comparison, and the documents in `docs/` and `reports/`. Two
+documents in `docs/` (`05` and `07`) reproduce analyses produced by other tools and say so at
+the top. Device figures come from Altera's published product tables and user guides, linked
+where used.
+
+`paper/` holds the arXiv v1 PDF for convenience. The copyright is the authors'; refer to the
+arXiv record for the license the authors chose.

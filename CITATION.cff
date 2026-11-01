@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "This repository reproduces and extends a published paper. Please cite the paper (preferred-citation) and, if you use the reproduction itself, this repository."
+title: "fpga-mxfp-tensor: reproduction and extension of Jack of All Scales on Agilex 3/5/7"
+type: software
+repository-code: "https://github.com/fpga-professional-association/fpga-mxfp-tensor"
+date-released: 2026-10-31
+authors:
+  - name: "FPGA Professional Association"
+preferred-citation:
+  type: article
+  title: "Jack of All Scales: A Versatile FPGA Tensor Block for MXFP Precisions"
+  authors:
+    - family-names: Mekhemer
+      given-names: Marwan
+    - family-names: Elsousy
+      given-names: Ahmed
+    - family-names: Venkatesh
+      given-names: Balaji
+    - family-names: Rowley
+      given-names: Raphael
+    - family-names: Betz
+      given-names: Vaughn
+    - family-names: Kapre
+      given-names: Nachiket
+    - family-names: Boutros
+      given-names: Andrew
+  journal: "arXiv preprint"
+  identifiers:
+    - type: other
+      value: "arXiv:2607.13898"
+  url: "https://arxiv.org/abs/2607.13898"
+  year: 2026
+  month: 7
