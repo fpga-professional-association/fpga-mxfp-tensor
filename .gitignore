@@ -35,3 +35,4 @@ Thumbs.db
 .DS_Store
 results_quant_*.log
 quant/results/quality/*.log
+quant/results/export_*/
