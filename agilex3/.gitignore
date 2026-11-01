@@ -14,3 +14,4 @@ board/qsys/*.log
 board/*.log
 board/syn/dni/
 char/bfp_*/
+char/fxp_*/
