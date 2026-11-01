@@ -13,3 +13,4 @@ board/qsys/ip/mx_shell/*/
 board/qsys/*.log
 board/*.log
 board/syn/dni/
+char/bfp_*/
