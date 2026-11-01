@@ -1,0 +1,635 @@
+Synthesis report
+Sat Oct 31 20:42:37 2026
+Quartus Prime Version 26.1.0 Build 110 03/26/2026 SC Pro Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Synthesis Summary
+  3. Synthesis Settings
+  4. Synthesis Source Files Read
+  5. Synthesis Partition Summary
+---- Analysis & Elaboration Stage Reports ----
+       6. Parameter Settings for Top-Level Entity
+       7. Parameter Settings for User Entity pipeline Instance: PE
+       8. Parameter Settings for User Entity pipeline Instance: E1
+       9. Parameter Settings for User Entity pipeline Instance: E2
+      10. Parameter Settings for User Entity pipeline Instance: E3
+      11. Parameter Settings for User Entity pipeline Instance: L1
+      12. Parameter Settings for User Entity pipeline Instance: L2
+      13. Parameter Settings for User Entity pipeline Instance: L3
+      14. Parameter Settings for User Entity pipeline Instance: V
+      15. Parameter Settings for User Entity fp_aitb Instance: dot0
+      16. Parameter Settings for User Entity fp_aitb Instance: dot3
+      17. Top Causes of Logic Optimized Away During Sweep
+---- Logic Synthesis Stage Reports ----
+      18. Partition "root_partition" Resource Utilization by Entity
+      19. General Register Statistics for Partition "root_partition"
+      20. Post-Synthesis Netlist Statistics for Partition "root_partition"
+      21. Synthesis Resource Usage Summary for Partition "root_partition"
+      22. Synthesis DSP Block Usage Summary for Partition "root_partition"
+ 23. General Warnings
+ 24. Synthesis Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2026  Altera Corporation. All rights reserved.
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, the Altera Quartus Prime License Agreement,
+the Altera IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Altera and sold by Altera or its authorized distributors.  Please
+refer to the Altera Software License Subscription Agreements 
+on the Quartus Prime software download page.
+
+
+
++-----------------------------------------------------------------------------------+
+; Synthesis Summary                                                                 ;
++--------------------------------------+--------------------------------------------+
+; Synthesis Status                     ; Successful - Sat Oct 31 20:42:36 2026      ;
+; Revision Name                        ; INT8_BFP                                   ;
+; Top-level Entity Name                ; bfp_dot                                    ;
+; Family                               ; Agilex 3                                   ;
+; Quartus Prime Version                ; 26.1.0 Build 110 03/26/2026 SC Pro Edition ;
+; Device                               ; A3CY100BM16AE7S                            ;
+; Logic utilization estimate (in ALMs) ; 642 / 34,000 ( 2 % )                       ;
+; Total dedicated logic registers      ; 959                                        ;
+; Estimated DSP Blocks Post-Merging    ; 4                                          ;
++--------------------------------------+--------------------------------------------+
+
+
++--------------------------------------------------------------------------------------------------------------------------------------------------+
+; Synthesis Settings                                                                                                                               ;
++----------------------------------------------------------------------------------------------+-------------------------+-------------------------+
+; Option                                                                                       ; Setting                 ; Default Value           ;
++----------------------------------------------------------------------------------------------+-------------------------+-------------------------+
+; Device                                                                                       ; A3CY100BM16AE7S         ;                         ;
+; Top-level entity name                                                                        ; bfp_dot                 ; INT8_BFP                ;
+; Family name                                                                                  ; Agilex 3                ; Cyclone 10 GX           ;
+; Maximum processors allowed for parallel compilation                                          ; 6                       ;                         ;
+; Enable parallel Assembler and Timing Analyzer during compilation                             ; On                      ; On                      ;
+; Enable compact report table                                                                  ; Off                     ; Off                     ;
+; Enable Design Assistant in the compilation flow                                              ; On                      ; On                      ;
+; Design Assistant include IP blocks                                                           ; Off                     ; Off                     ;
+; High fanout net threshold for RAM inference                                                  ; 15                      ; 15                      ;
+; Design Assistant limit on reported violations per rule                                       ; 5000                    ; 5000                    ;
+; Optimization Mode                                                                            ; Balanced                ; Balanced                ;
+; Allow Register Retiming                                                                      ; On                      ; On                      ;
+; Allow RAM Retiming                                                                           ; On                      ; On                      ;
+; Allow DSP Retiming                                                                           ; On                      ; On                      ;
+; Restructure Multiplexers                                                                     ; Auto                    ; Auto                    ;
+; Waive gated clock synchronizer check                                                         ; On                      ; On                      ;
+; (DEPRECATED) MLAB Add Timing Constraints For Mixed-Port Feed-Through Mode Setting Don't Care ; Off                     ; Off                     ;
+; Preserve fewer node names                                                                    ; On                      ; On                      ;
+; Altera FPGA IP Evaluation Mode                                                               ; Enable                  ; Enable                  ;
+; Verilog Version                                                                              ; Verilog_2001            ; Verilog_2001            ;
+; VHDL Version                                                                                 ; VHDL_1993               ; VHDL_1993               ;
+; State Machine Processing                                                                     ; Auto                    ; Auto                    ;
+; Safe State Machine                                                                           ; Auto                    ; Auto                    ;
+; Iteration limit for constant Verilog loops                                                   ; 5000                    ; 5000                    ;
+; Iteration limit for non-constant Verilog loops                                               ; 250                     ; 250                     ;
+; Infer RAMs from Raw Logic                                                                    ; On                      ; On                      ;
+; DSP Action on miss                                                                           ; Ignore                  ; Ignore                  ;
+; DSP Block Balancing                                                                          ; Auto                    ; Auto                    ;
+; NOT Gate Push-Back                                                                           ; On                      ; On                      ;
+; Power-Up Don't Care                                                                          ; On                      ; On                      ;
+; Remove Redundant Logic Cells                                                                 ; Off                     ; Off                     ;
+; Remove Duplicate Registers                                                                   ; On                      ; On                      ;
+; Ignore GLOBAL Buffers                                                                        ; Off                     ; Off                     ;
+; Ignore LCELL Buffers                                                                         ; Off                     ; Off                     ;
+; Ignore SOFT Buffers                                                                          ; On                      ; On                      ;
+; Optimization Technique                                                                       ; Balanced                ; Balanced                ;
+; Perform WYSIWYG Primitive Resynthesis                                                        ; Off                     ; Off                     ;
+; Auto ROM Replacement                                                                         ; On                      ; On                      ;
+; Auto RAM Replacement                                                                         ; On                      ; On                      ;
+; Auto DSP Block Replacement                                                                   ; On                      ; On                      ;
+; Auto Shift Register Replacement                                                              ; Auto                    ; Auto                    ;
+; Allow Shift Register Merging across Hierarchies                                              ; Auto                    ; Auto                    ;
+; Physical Shift Register Inference                                                            ; On                      ; On                      ;
+; Auto Clock Enable Replacement                                                                ; On                      ; On                      ;
+; Strict RAM Replacement                                                                       ; Off                     ; Off                     ;
+; Allow Synchronous Control Signals                                                            ; On                      ; On                      ;
+; Force Use of Synchronous Clear Signals                                                       ; Off                     ; Off                     ;
+; Auto Resource Sharing                                                                        ; Off                     ; Off                     ;
+; Allow Any RAM Size For Recognition                                                           ; Off                     ; Off                     ;
+; Allow Any Shift Register Size For Recognition                                                ; Off                     ; Off                     ;
+; Ignore translate_off and synthesis_off directives                                            ; Off                     ; Off                     ;
+; Report Propagation of Constraints                                                            ; On                      ; On                      ;
+; Ignore Maximum Fan-Out Assignments                                                           ; Off                     ; Off                     ;
+; Maximum Synchronizer Length Protected during Optimization                                    ; 3                       ; 3                       ;
+; Power Optimization During Synthesis                                                          ; Normal compilation      ; Normal compilation      ;
+; HDL message level                                                                            ; Level2                  ; Level2                  ;
+; Number of Protected Registers Reported in Synthesis Report                                   ; 100                     ; 100                     ;
+; Number of Removed Registers Reported in Synthesis Report                                     ; 5000                    ; 5000                    ;
+; Number of Optimized Away Hierarchies Reported in Synthesis Report                            ; 100                     ; 100                     ;
+; Number of Top Root Causes Reported in Synthesis Report                                       ; 10                      ; 10                      ;
+; Group Identical Hierarchies in Optimized Away Hierarchies Report                             ; On                      ; On                      ;
+; Number of Swept Nodes Reported in Synthesis Report                                           ; 5000                    ; 5000                    ;
+; Number of Inverted Registers Reported in Synthesis Report                                    ; 100                     ; 100                     ;
+; Clock MUX Protection                                                                         ; On                      ; On                      ;
+; Auto Gated Clock Conversion                                                                  ; Off                     ; Off                     ;
+; Block Design Naming                                                                          ; Auto                    ; Auto                    ;
+; SDC constraint protection                                                                    ; Off                     ; Off                     ;
+; Optimization and Constraint Precedence                                                       ; Prioritize Optimization ; Prioritize Optimization ;
+; Synthesis Effort                                                                             ; Auto                    ; Auto                    ;
+; Shift Register Replacement - Allow Asynchronous Clear Signal                                 ; On                      ; On                      ;
+; Analysis & Synthesis Message Level                                                           ; Medium                  ; Medium                  ;
+; Disable Register Merging Across Hierarchies                                                  ; Auto                    ; Auto                    ;
+; Resource Aware Inference For Block RAM                                                       ; On                      ; On                      ;
+; Automatic Parallel Synthesis                                                                 ; On                      ; On                      ;
+; Partial Reconfiguration Bitstream ID                                                         ; Off                     ; Off                     ;
+; Disable DSP Negate Inferencing                                                               ; Off                     ; Off                     ;
+; Report Parameter Settings                                                                    ; On                      ; On                      ;
+; Report Parameter Settings to ASCII                                                           ; On                      ; On                      ;
+; Report Source Assignments                                                                    ; On                      ; On                      ;
+; Report Source Assignments to ASCII                                                           ; On                      ; On                      ;
+; Report Resource Utilization by Entity to ASCII                                               ; On                      ; On                      ;
+; Size of the Latch Report                                                                     ; 100                     ; 100                     ;
+; Enable VHDL static assertion support                                                         ; Off                     ; Off                     ;
+; Enable SystemVerilog static assertion support                                                ; Off                     ; Off                     ;
+; Enable State Machines Inference                                                              ; On                      ; On                      ;
+; Allow RAMs Inferred In Generate-For Loop For Verilog                                         ; Off                     ; Off                     ;
+; Enable formal verification support during compilation                                        ; Off                     ; Off                     ;
+; Size of the PR Initial Conditions Report                                                     ; 100                     ; 100                     ;
+; Number of Registers with Ignored Power-Up Settings Reported in Synthesis Report              ; 500                     ; 500                     ;
+; Report PR Initial Values as Errors                                                           ; Off                     ; Off                     ;
+; Fractal Synthesis                                                                            ; Off                     ; Off                     ;
+; Aggressive Multiplexer Area Optimization                                                     ; Auto                    ; Auto                    ;
+; 6LUT to Extended Mode Conversion                                                             ; Auto                    ; Auto                    ;
+; Synthesis Available Resource Multiplier                                                      ; 1                       ; 1                       ;
+; Message Level for Unconnected Output Ports                                                   ; Warning                 ; Warning                 ;
+; Pack Barrelshifters into Carry Chains for Better Area                                        ; Auto                    ; Auto                    ;
+; Initialize Verilog enums to X                                                                ; Off                     ; Off                     ;
+; Enable dynamic report                                                                        ; Off                     ; Off                     ;
+; Show Collapsible Rows in Ascii Report for Warning Summary Reports                            ; On                      ; On                      ;
+; Enable RTL Analysis Debug Mode                                                               ; Off                     ; Off                     ;
+; Enable preserve for debug assignments                                                        ; Off                     ; Off                     ;
++----------------------------------------------------------------------------------------------+-------------------------+-------------------------+
+
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Synthesis Source Files Read                                                                                                                                                                                                                                                                                                       ;
++--------------------------------------------------------------------------------+-----------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+---------+-----------+---------------+----------------------------------+
+; File Name with User-Entered Path                                               ; File Type                                                                   ; File Name with Absolute Path                                                              ; Library ; IP Source ; Include Files ; MD5                              ;
++--------------------------------------------------------------------------------+-----------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+---------+-----------+---------------+----------------------------------+
+; ../../../upstream/fpga-mxfp/characterization/ai_tensor_block/rtl/fp_aitb.sv    ; User-Specified SystemVerilog HDL File                                       ; D:/fpga-mxfp-tensor/upstream/fpga-mxfp/characterization/ai_tensor_block/rtl/fp_aitb.sv    ;         ;           ;               ; ae8357afad8cb3c8def3cf4224b964f1 ;
+; ../../../upstream/fpga-mxfp/characterization/ai_tensor_block/rtl/pipeline.sv   ; User-Specified SystemVerilog HDL File                                       ; D:/fpga-mxfp-tensor/upstream/fpga-mxfp/characterization/ai_tensor_block/rtl/pipeline.sv   ;         ;           ;               ; 3ffdc91d921097edaaec9944c552c3ab ;
+; ../../board/rtl/bfp_dot.sv                                                     ; User-Specified SystemVerilog HDL File                                       ; D:/fpga-mxfp-tensor/agilex3/board/rtl/bfp_dot.sv                                          ;         ;           ;               ; ec0e1e29079838c89f984ceddba014a8 ;
+; ../../../upstream/fpga-mxfp/characterization/ai_tensor_block/cons/mxfp_dot.sdc ; User-Specified SDC File (Read by the Timing Analyzer at each fitter stage)  ; D:/fpga-mxfp-tensor/upstream/fpga-mxfp/characterization/ai_tensor_block/cons/mxfp_dot.sdc ;         ;           ;               ; c00825c29877304caee2d97945f6bc49 ;
++--------------------------------------------------------------------------------+-----------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+---------+-----------+---------------+----------------------------------+
+
+
++--------------------------------------------------------------------------------------------+
+; Synthesis Partition Summary                                                                ;
++----------------+----------------+---------+--------------+-------+-------------------------+
+; Partition Name ; Hierarchy Path ; Type    ; Preservation ; Empty ; Partition Database File ;
++----------------+----------------+---------+--------------+-------+-------------------------+
+; root_partition ; |              ; Default ;              ;       ;                         ;
++----------------+----------------+---------+--------------+-------+-------------------------+
+
+
++-----------------------------------------+
+; Parameter Settings for Top-Level Entity ;
++----------------+-------+----------------+
+; Parameter Name ; Value ; Type           ;
++----------------+-------+----------------+
+; DOT_LEN        ; 32    ; Signed Integer ;
+; PIPE           ; 1     ; Signed Integer ;
++----------------+-------+----------------+
+All Instances:
+<top>
+
+
+
++----------------------------------------------------------+
+; Parameter Settings for User Entity pipeline Instance: PE ;
++----------------+-------+---------------------------------+
+; Parameter Name ; Value ; Type                            ;
++----------------+-------+---------------------------------+
+; STAGES         ; 1     ; Signed Integer                  ;
+; W              ; 8     ; Signed Integer                  ;
++----------------+-------+---------------------------------+
+All Instances:
+g_in[0].P
+g_in[1].P
+g_in[2].P
+g_in[3].P
+g_in[4].P
+g_in[5].P
+g_in[6].P
+g_in[7].P
+g_in[8].P
+g_in[9].P
+g_in[10].P
+g_in[11].P
+g_in[12].P
+g_in[13].P
+g_in[14].P
+g_in[15].P
+g_in[16].P
+g_in[17].P
+g_in[18].P
+g_in[19].P
+g_in[20].P
+g_in[21].P
+g_in[22].P
+g_in[23].P
+g_in[24].P
+g_in[25].P
+g_in[26].P
+g_in[27].P
+g_in[28].P
+g_in[29].P
+g_in[30].P
+g_in[31].P
+PE
+
+
+
++----------------------------------------------------------+
+; Parameter Settings for User Entity pipeline Instance: E1 ;
++----------------+-------+---------------------------------+
+; Parameter Name ; Value ; Type                            ;
++----------------+-------+---------------------------------+
+; STAGES         ; 2     ; Signed Integer                  ;
+; W              ; 8     ; Signed Integer                  ;
++----------------+-------+---------------------------------+
+All Instances:
+g_s1[10].P
+g_s1[11].P
+g_s1[12].P
+g_s1[13].P
+g_s1[14].P
+g_s1[15].P
+g_s1[16].P
+g_s1[17].P
+g_s1[18].P
+g_s1[19].P
+E1
+
+
+
++----------------------------------------------------------+
+; Parameter Settings for User Entity pipeline Instance: E2 ;
++----------------+-------+---------------------------------+
+; Parameter Name ; Value ; Type                            ;
++----------------+-------+---------------------------------+
+; STAGES         ; 4     ; Signed Integer                  ;
+; W              ; 8     ; Signed Integer                  ;
++----------------+-------+---------------------------------+
+All Instances:
+g_s2[20].P
+g_s2[21].P
+g_s2[22].P
+g_s2[23].P
+g_s2[24].P
+g_s2[25].P
+g_s2[26].P
+g_s2[27].P
+g_s2[28].P
+g_s2[29].P
+E2
+
+
+
++----------------------------------------------------------+
+; Parameter Settings for User Entity pipeline Instance: E3 ;
++----------------+-------+---------------------------------+
+; Parameter Name ; Value ; Type                            ;
++----------------+-------+---------------------------------+
+; STAGES         ; 6     ; Signed Integer                  ;
+; W              ; 8     ; Signed Integer                  ;
++----------------+-------+---------------------------------+
+All Instances:
+g_s3[30].P
+g_s3[31].P
+E3
+
+
+
++----------------------------------------------------------+
+; Parameter Settings for User Entity pipeline Instance: L1 ;
++----------------+-------+---------------------------------+
+; Parameter Name ; Value ; Type                            ;
++----------------+-------+---------------------------------+
+; STAGES         ; 2     ; Signed Integer                  ;
+; W              ; 1     ; Signed Integer                  ;
++----------------+-------+---------------------------------+
+All Instances:
+L1
+
+
+
++----------------------------------------------------------+
+; Parameter Settings for User Entity pipeline Instance: L2 ;
++----------------+-------+---------------------------------+
+; Parameter Name ; Value ; Type                            ;
++----------------+-------+---------------------------------+
+; STAGES         ; 4     ; Signed Integer                  ;
+; W              ; 1     ; Signed Integer                  ;
++----------------+-------+---------------------------------+
+All Instances:
+L2
+
+
+
++----------------------------------------------------------+
+; Parameter Settings for User Entity pipeline Instance: L3 ;
++----------------+-------+---------------------------------+
+; Parameter Name ; Value ; Type                            ;
++----------------+-------+---------------------------------+
+; STAGES         ; 6     ; Signed Integer                  ;
+; W              ; 1     ; Signed Integer                  ;
++----------------+-------+---------------------------------+
+All Instances:
+L3
+
+
+
++---------------------------------------------------------+
+; Parameter Settings for User Entity pipeline Instance: V ;
++----------------+-------+--------------------------------+
+; Parameter Name ; Value ; Type                           ;
++----------------+-------+--------------------------------+
+; STAGES         ; 11    ; Signed Integer                 ;
+; W              ; 1     ; Signed Integer                 ;
++----------------+-------+--------------------------------+
+All Instances:
+V
+
+
+
++-----------------------------------------------------------+
+; Parameter Settings for User Entity fp_aitb Instance: dot0 ;
++----------------+--------------------------+---------------+
+; Parameter Name ; Value                    ; Type          ;
++----------------+--------------------------+---------------+
+; CHAIN_MODE     ; zero_tensor_chain_output ; String        ;
++----------------+--------------------------+---------------+
+All Instances:
+dot0
+
+
+
++-----------------------------------------------------------+
+; Parameter Settings for User Entity fp_aitb Instance: dot3 ;
++----------------+---------------------+--------------------+
+; Parameter Name ; Value               ; Type               ;
++----------------+---------------------+--------------------+
+; CHAIN_MODE     ; tensor_chain_output ; String             ;
++----------------+---------------------+--------------------+
+All Instances:
+dot1
+dot2
+dot3
+
+
+
+Top root causes of logic optimization that have been identified during sweep. For more details and filtering options, ensure that you have compiled with the "Enable RTL Analysis Debug Mode " setting turned on under Assignments->Settings->Compiler Settings, then go to the " Root Causes Tab " in the " Sweep Hints Viewer " tool in the " RTL Analyzer ".
++----------------------------------------------------------------------------------------------------+
+; Top Causes of Logic Optimized Away During Sweep                                                    ;
++--------------------------------+------------------+--------------------------+---------------------+
+; Root Object Path               ; Root Object Type ; Root Reason              ; Swept Objects Count ;
++--------------------------------+------------------+--------------------------+---------------------+
+; dot0|acc_en                    ; INPUT_INST_PORT  ; stuck at 0               ; 1                   ;
+; dot1|acc_en                    ; INPUT_INST_PORT  ; stuck at 0               ; 1                   ;
+; dot2|acc_en                    ; INPUT_INST_PORT  ; stuck at 0               ; 1                   ;
+; dot3|acc_en                    ; INPUT_INST_PORT  ; stuck at 0               ; 1                   ;
+; dot0|zero_en                   ; INPUT_INST_PORT  ; stuck at 1               ; 1                   ;
+; dot1|zero_en                   ; INPUT_INST_PORT  ; stuck at 0               ; 1                   ;
+; dot2|zero_en                   ; INPUT_INST_PORT  ; stuck at 0               ; 1                   ;
+; dot3|zero_en                   ; INPUT_INST_PORT  ; stuck at 0               ; 1                   ;
+; dot0|cascade_data_in_col_1[31] ; INPUT_INST_PORT  ; stuck at 0 (unconnected) ; 1                   ;
+; dot0|cascade_data_in_col_1[30] ; INPUT_INST_PORT  ; stuck at 0 (unconnected) ; 1                   ;
++--------------------------------+------------------+--------------------------+---------------------+
+Table limited at 10 items. To change the number of top root causes reported, set the "Number of Top Root Causes Reported in Synthesis Report " option under Assignments->Settings->Compiler Settings->Advanced Settings (Synthesis)
+
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Partition "root_partition" Resource Utilization by Entity                                                                                                                           ;
++----------------------------+---------------------+---------------------------+-------------------+------------+------+-----------+---------------------+-------------+--------------+
+; Compilation Hierarchy Node ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Max Depth ; Full Hierarchy Name ; Entity Name ; Library Name ;
++----------------------------+---------------------+---------------------------+-------------------+------------+------+-----------+---------------------+-------------+--------------+
+; |                          ; 9 (0)               ; 959 (0)                   ; 0                 ; 4          ; 341  ; 1.0 (1.0) ; |                   ; bfp_dot     ; altera_work  ;
+;    |E1|                    ; 8 (8)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 1.0 (1.0) ; E1                  ; pipeline    ; altera_work  ;
+;    |E2|                    ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; E2                  ; pipeline    ; altera_work  ;
+;    |E3|                    ; 0 (0)               ; 48 (48)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; E3                  ; pipeline    ; altera_work  ;
+;    |L1|                    ; 1 (1)               ; 2 (2)                     ; 0                 ; 0          ; 0    ; 1.0 (1.0) ; L1                  ; pipeline    ; altera_work  ;
+;    |L2|                    ; 0 (0)               ; 4 (4)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; L2                  ; pipeline    ; altera_work  ;
+;    |L3|                    ; 0 (0)               ; 6 (6)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; L3                  ; pipeline    ; altera_work  ;
+;    |PE|                    ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 1.0 (1.0) ; PE                  ; pipeline    ; altera_work  ;
+;    |V|                     ; 0 (0)               ; 11 (11)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; V                   ; pipeline    ; altera_work  ;
+;    |dot0|                  ; 0 (0)               ; 0 (0)                     ; 0                 ; 1          ; 0    ; 0.0 (0.0) ; dot0                ; fp_aitb     ; altera_work  ;
+;    |dot1|                  ; 0 (0)               ; 0 (0)                     ; 0                 ; 1          ; 0    ; 0.0 (0.0) ; dot1                ; fp_aitb     ; altera_work  ;
+;    |dot2|                  ; 0 (0)               ; 0 (0)                     ; 0                 ; 1          ; 0    ; 0.0 (0.0) ; dot2                ; fp_aitb     ; altera_work  ;
+;    |dot3|                  ; 0 (0)               ; 0 (0)                     ; 0                 ; 1          ; 0    ; 0.0 (0.0) ; dot3                ; fp_aitb     ; altera_work  ;
+;    |g_in[0].P|             ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[0].P           ; pipeline    ; altera_work  ;
+;    |g_in[10].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[10].P          ; pipeline    ; altera_work  ;
+;    |g_in[11].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[11].P          ; pipeline    ; altera_work  ;
+;    |g_in[12].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[12].P          ; pipeline    ; altera_work  ;
+;    |g_in[13].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[13].P          ; pipeline    ; altera_work  ;
+;    |g_in[14].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[14].P          ; pipeline    ; altera_work  ;
+;    |g_in[15].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[15].P          ; pipeline    ; altera_work  ;
+;    |g_in[16].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[16].P          ; pipeline    ; altera_work  ;
+;    |g_in[17].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[17].P          ; pipeline    ; altera_work  ;
+;    |g_in[18].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[18].P          ; pipeline    ; altera_work  ;
+;    |g_in[19].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[19].P          ; pipeline    ; altera_work  ;
+;    |g_in[1].P|             ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[1].P           ; pipeline    ; altera_work  ;
+;    |g_in[20].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[20].P          ; pipeline    ; altera_work  ;
+;    |g_in[21].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[21].P          ; pipeline    ; altera_work  ;
+;    |g_in[22].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[22].P          ; pipeline    ; altera_work  ;
+;    |g_in[23].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[23].P          ; pipeline    ; altera_work  ;
+;    |g_in[24].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[24].P          ; pipeline    ; altera_work  ;
+;    |g_in[25].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[25].P          ; pipeline    ; altera_work  ;
+;    |g_in[26].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[26].P          ; pipeline    ; altera_work  ;
+;    |g_in[27].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[27].P          ; pipeline    ; altera_work  ;
+;    |g_in[28].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[28].P          ; pipeline    ; altera_work  ;
+;    |g_in[29].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[29].P          ; pipeline    ; altera_work  ;
+;    |g_in[2].P|             ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[2].P           ; pipeline    ; altera_work  ;
+;    |g_in[30].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[30].P          ; pipeline    ; altera_work  ;
+;    |g_in[31].P|            ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[31].P          ; pipeline    ; altera_work  ;
+;    |g_in[3].P|             ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[3].P           ; pipeline    ; altera_work  ;
+;    |g_in[4].P|             ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[4].P           ; pipeline    ; altera_work  ;
+;    |g_in[5].P|             ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[5].P           ; pipeline    ; altera_work  ;
+;    |g_in[6].P|             ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[6].P           ; pipeline    ; altera_work  ;
+;    |g_in[7].P|             ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[7].P           ; pipeline    ; altera_work  ;
+;    |g_in[8].P|             ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[8].P           ; pipeline    ; altera_work  ;
+;    |g_in[9].P|             ; 0 (0)               ; 8 (8)                     ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_in[9].P           ; pipeline    ; altera_work  ;
+;    |g_s1[10].P|            ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s1[10].P          ; pipeline    ; altera_work  ;
+;    |g_s1[11].P|            ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s1[11].P          ; pipeline    ; altera_work  ;
+;    |g_s1[12].P|            ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s1[12].P          ; pipeline    ; altera_work  ;
+;    |g_s1[13].P|            ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s1[13].P          ; pipeline    ; altera_work  ;
+;    |g_s1[14].P|            ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s1[14].P          ; pipeline    ; altera_work  ;
+;    |g_s1[15].P|            ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s1[15].P          ; pipeline    ; altera_work  ;
+;    |g_s1[16].P|            ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s1[16].P          ; pipeline    ; altera_work  ;
+;    |g_s1[17].P|            ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s1[17].P          ; pipeline    ; altera_work  ;
+;    |g_s1[18].P|            ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s1[18].P          ; pipeline    ; altera_work  ;
+;    |g_s1[19].P|            ; 0 (0)               ; 16 (16)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s1[19].P          ; pipeline    ; altera_work  ;
+;    |g_s2[20].P|            ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s2[20].P          ; pipeline    ; altera_work  ;
+;    |g_s2[21].P|            ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s2[21].P          ; pipeline    ; altera_work  ;
+;    |g_s2[22].P|            ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s2[22].P          ; pipeline    ; altera_work  ;
+;    |g_s2[23].P|            ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s2[23].P          ; pipeline    ; altera_work  ;
+;    |g_s2[24].P|            ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s2[24].P          ; pipeline    ; altera_work  ;
+;    |g_s2[25].P|            ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s2[25].P          ; pipeline    ; altera_work  ;
+;    |g_s2[26].P|            ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s2[26].P          ; pipeline    ; altera_work  ;
+;    |g_s2[27].P|            ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s2[27].P          ; pipeline    ; altera_work  ;
+;    |g_s2[28].P|            ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s2[28].P          ; pipeline    ; altera_work  ;
+;    |g_s2[29].P|            ; 0 (0)               ; 32 (32)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s2[29].P          ; pipeline    ; altera_work  ;
+;    |g_s3[30].P|            ; 0 (0)               ; 48 (48)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s3[30].P          ; pipeline    ; altera_work  ;
+;    |g_s3[31].P|            ; 0 (0)               ; 48 (48)                   ; 0                 ; 0          ; 0    ; 0.0 (0.0) ; g_s3[31].P          ; pipeline    ; altera_work  ;
++----------------------------+---------------------+---------------------------+-------------------+------------+------+-----------+---------------------+-------------+--------------+
+Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
+
+
++------------------------------------------------------------+
+; General Register Statistics for Partition "root_partition" ;
++----------------------------------------------+-------------+
+; Statistic                                    ; Value       ;
++----------------------------------------------+-------------+
+; Total registers                              ; 959         ;
+; Number of registers using Synchronous Clear  ; 668         ;
+; Number of registers using Synchronous Load   ; 0           ;
+; Number of registers using Asynchronous Clear ; 264         ;
+; Number of registers using Asynchronous Load  ; 0           ;
+; Number of registers using Clock Enable       ; 0           ;
+; Number of registers using Preset             ; 0           ;
++----------------------------------------------+-------------+
+
+
++------------------------------------------------------------------+
+; Post-Synthesis Netlist Statistics for Partition "root_partition" ;
++------------------------+-----------------------------------------+
+; Type                   ; Count                                   ;
++------------------------+-----------------------------------------+
+; boundary_port          ; 341                                     ;
+; tennm_dsp_prime        ; 4                                       ;
+; tennm_ff               ; 959                                     ;
+;     CLR                ; 264                                     ;
+;     SCLR               ; 668                                     ;
+;     plain              ; 27                                      ;
+; tennm_lcell_comb       ; 9                                       ;
+;     normal             ; 9                                       ;
+;         2 data inputs  ; 9                                       ;
+;                        ;                                         ;
+; Number of carry chains ; 0                                       ;
+; Max carry chain length ; 0                                       ;
+;                        ;                                         ;
+; Max LUT depth          ; 1.00                                    ;
+; Average LUT depth      ; 0.01                                    ;
++------------------------+-----------------------------------------+
+
+
++-----------------------------------------------------------------+
+; Synthesis Resource Usage Summary for Partition "root_partition" ;
++---------------------------------------------+-------------------+
+; Resource                                    ; Usage             ;
++---------------------------------------------+-------------------+
+; Estimate of Logic utilization (ALMs needed) ; 642               ;
+;                                             ;                   ;
+; Combinational ALUT usage for logic          ; 9                 ;
+;     -- 8 input functions                    ; 0                 ;
+;     -- 7 input functions                    ; 0                 ;
+;     -- 6 input functions                    ; 0                 ;
+;     -- 5 input functions                    ; 0                 ;
+;     -- 4 input functions                    ; 0                 ;
+;     -- <=3 input functions                  ; 9                 ;
+;                                             ;                   ;
+; Dedicated logic registers                   ; 959               ;
+;                                             ;                   ;
+; I/O pins                                    ; 341               ;
+;                                             ;                   ;
+; Total DSP Blocks                            ; 4                 ;
+;     -- [A] Total Fixed Point DSP Blocks     ; 0                 ;
+;     -- [B] Total Floating Point DSP Blocks  ; 0                 ;
+;     -- [C] Total DSP_PRIME Blocks           ; 4                 ;
+;                                             ;                   ;
+; Maximum fan-out node                        ; clk               ;
+; Maximum fan-out                             ; 963               ;
+; Total fan-out                               ; 3244              ;
+; Average fan-out                             ; 2.47              ;
++---------------------------------------------+-------------------+
+
+
++------------------------------------------------------------------+
+; Synthesis DSP Block Usage Summary for Partition "root_partition" ;
++----------------------------+-------------------------------------+
+; Statistic                  ; Number Used                         ;
++----------------------------+-------------------------------------+
+; Tensor Floating-Point      ; 4                                   ;
+; Total number of DSP blocks ; 4                                   ;
++----------------------------+-------------------------------------+
+Note: DSP block merging and most register packing occurs during the fitter.
+
+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; General Warnings                                                                                                                                                                                                                                                                           ;
++------------+------------------+-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Message ID ; Severity         ; Count ; Sample Warning                                                                                                                                                                                                                                     ;
++------------+------------------+-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; 20759      ; Critical Warning ; 1     ; Use the Reset Release IP in Agilex 3 designs to ensure a successful configuration. For more information about the Reset Release IP, refer to the Configuration User Guide.                                                                         ;
+; 21620      ; Warning          ; 1     ; Design Assistant Results: 1 of 1 High severity rules issued violations in snapshot 'partitioned'. Please refer to DRC report 'D:/fpga-mxfp-tensor/agilex3/char/bfp_a3c100/output_files_INT8_BFP/INT8_BFP.drc.partitioned.rpt' for more information ;
++------------+------------------+-------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+
++--------------------+
+; Synthesis Messages ;
++--------------------+
+Info: *******************************************************************
+Info: Running Quartus Prime Synthesis
+    Info: Version 26.1.0 Build 110 03/26/2026 SC Pro Edition
+    Info: Processing started: Sat Oct 31 20:42:29 2026
+    Info: System process ID: 18268
+Info: Command: quartus_syn --read_settings_files=on --write_settings_files=off bfp_cli -c INT8_BFP --dni
+Info: qis_default_flow_script.tcl version: #1
+Info: Initializing Synthesis...
+Info: Project = "bfp_cli"
+Info: Revision = "INT8_BFP"
+Info (21958): Initialized Quartus Message Database
+Info: Analyzing source files
+Critical Warning (20759): Use the Reset Release IP in Agilex 3 designs to ensure a successful configuration. For more information about the Reset Release IP, refer to the Configuration User Guide.
+Info: Elaborating from top-level entity "bfp_dot"
+Info (23145): Top design parameter 'PIPE' set with value '1' from user settings File: D Line: 0
+Info: Found 3 design entities
+Info: There are 67 partitions after elaboration.
+Info: Running rule checking for Agilex5 protocol IPs...
+Info: DA report generation in native DNI mode
+Info (21615): Running Design Assistant Rules for snapshot 'partitioned'
+Info: No waiver waived any violations
+Info (22360): Design Assistant Results: 28 of 29 enabled rules passed, and 1 rules was disabled, in snapshot 'partitioned'
+Info (21660): Design Assistant Results: 0 of 19 Critical severity rules issued violations in snapshot 'partitioned'
+Warning (21620): Design Assistant Results: 1 of 1 High severity rules issued violations in snapshot 'partitioned'. Please refer to DRC report 'D:/fpga-mxfp-tensor/agilex3/char/bfp_a3c100/output_files_INT8_BFP/INT8_BFP.drc.partitioned.rpt' for more information
+Info (21621): Design Assistant Results: 0 of 1 Medium severity rules issued violations in snapshot 'partitioned'
+Info (21622): Design Assistant Results: 0 of 8 Low severity rules issued violations in snapshot 'partitioned'
+Info: Synthesizing partition "root_partition"
+Info (21057): Implemented 1313 device resources after synthesis - the final resource count might be different
+    Info (21058): Implemented 268 input pins
+    Info (21059): Implemented 73 output pins
+    Info (21061): Implemented 968 logic cells
+    Info (21062): Implemented 4 DSP elements
+Info: Successfully synthesized partition
+Info: Saving post-synthesis snapshots for 1 partition(s)
+Info (21615): Running Design Assistant Rules for snapshot 'synthesized'
+Info: No waiver waived any violations
+Info (22360): Design Assistant Results: 13 of 13 enabled rules passed, and 7 rules was disabled, in snapshot 'synthesized'
+Info (21661): Design Assistant Results: 0 of 1 High severity rules issued violations in snapshot 'synthesized'
+Info (21621): Design Assistant Results: 0 of 6 Medium severity rules issued violations in snapshot 'synthesized'
+Info (21622): Design Assistant Results: 0 of 6 Low severity rules issued violations in snapshot 'synthesized'
+Info: Quartus Prime Synthesis was successful. 0 errors, 1 warning
+    Info: Peak virtual memory: 1153 megabytes
+    Info: Processing ended: Sat Oct 31 20:42:37 2026
+    Info: Elapsed time: 00:00:08
+    Info: System process ID: 18268
+
+

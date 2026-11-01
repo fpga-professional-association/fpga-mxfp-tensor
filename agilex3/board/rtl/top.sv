@@ -5,7 +5,8 @@
 module top #(
   parameter int E = 2,
   parameter int M = 1,
-  parameter int PIPE = 1
+  parameter int PIPE = 1,
+  parameter int DUT_KIND = 0
 ) (
   input  wire CLK_25M,
   input  wire UART_RX,
@@ -41,7 +42,7 @@ module top #(
     .rst_sys_in_reset_n   (pll_locked)
   );
 
-  mxfp_harness #(.E(E), .M(M), .PIPE(PIPE)) harness (
+  mxfp_harness #(.E(E), .M(M), .PIPE(PIPE), .DUT_KIND(DUT_KIND)) harness (
     .clk              (clk_dut),
     .rst_n            (rst_dut_n),
     .av_address       (av_address[12:2]),

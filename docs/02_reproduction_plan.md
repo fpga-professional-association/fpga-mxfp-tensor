@@ -117,7 +117,19 @@ result.
 6. [ ] Frequency-aware peak numbers: re-derive Fig. 3 using fmax measured at 25%, 50%, 75%, 95%
        device fill instead of the single-instance fmax. This is the paper's acknowledged
        weakness and fixing it is mostly compute time.
-7. [ ] Full-device inference engine on AGM039 (if we get access): HBM2e weight streaming, a
+7. [ ] Agilex-specific quantization formats (from `07_external_quantization_formats.md`):
+   - [~] W4A8-BFP / INT8-BFP on silicon: `bfp_dot.sv` (paper's cascade, decoder removed),
+         golden `--bfp 4` and `--bfp 8`, one bitstream with `DUT_KIND = 1`. Standalone fit of
+         `bfp_dot` vs `mxfp_dot` on Agilex 3 and Agilex 5 gives the decoder's ALM cost.
+   - [~] PTQ accuracy: `scripts/quant_formats.py` fake-quantizes a small LLM's block linears to
+         INT8-BFP, MXFP4, INT4-BFP (groups 10/20/32/40) and INT5-BFP, perplexity on WikiText-2.
+         Answers "can INT4-BFP match MXFP4 at the same storage" to first order, no QAT.
+   - [ ] QAT follow-up with Brevitas if INT4-BFP g32 is within ~5% perplexity of MXFP4.
+   - [ ] Group size vs DSP tile: 32-element groups on 10-lane tiles vs 10/20/40-element groups;
+         measure scale-handling ALMs and control complexity in the systolic array.
+   - [ ] Verify the note's claims about FPGA AI Suite formats (FP12AGX, FP13AGX, INT8-BFP
+         preferred) against the AI Suite documentation.
+8. [ ] Full-device inference engine on AGM039 (if we get access): HBM2e weight streaming, a
        matmul engine built from item 3, and an attention path. Target gpt-oss-20b decode.
        See `04_mxfp4_model_fit.md` for why this is the only Agilex part where LLM inference is
        more than a toy.

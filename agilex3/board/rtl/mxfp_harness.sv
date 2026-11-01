@@ -46,6 +46,7 @@ module mxfp_harness #(
   parameter int E = 2,
   parameter int M = 1,
   parameter int PIPE = 1,
+  parameter int DUT_KIND = 0,   // 0 = paper's mxfp_dot (MXFP EeMm elements), 1 = bfp_dot (raw int8 lanes)
   parameter int DOT_LEN = 32,
   parameter int MAX_VEC = 64,
   parameter int TRACE_N = 192
@@ -65,7 +66,7 @@ module mxfp_harness #(
   output logic        done
 );
 
-  localparam int W = M + E + 1;
+  localparam int W = (DUT_KIND == 1) ? 8 : M + E + 1;
   localparam int VW = 256;
   localparam int IDXW = $clog2(MAX_VEC);
   localparam int TW = $clog2(TRACE_N);
@@ -149,10 +150,10 @@ module mxfp_harness #(
             if (idx < TRACE_N) rd_mux[n*4 +: 4] = trc_fl[idx];
           end
         end else case (av_address[6:0])
-          7'h00: rd_mux = 32'h4D58_0002;
+          7'h00: rd_mux = 32'h4D58_0003;
           7'h02: rd_mux = {29'd0, err_overrun, done, busy};
           7'h03: rd_mux = {{(31-IDXW){1'b0}}, nvec};
-          7'h04: rd_mux = {16'd0, E[7:0], M[7:0]};
+          7'h04: rd_mux = {8'd0, DUT_KIND[7:0], E[7:0], M[7:0]};
           7'h05: rd_mux = cycles;
           7'h06: rd_mux = free_cnt[31:0];
           7'h07: rd_mux = free_cnt[63:32];
@@ -317,21 +318,21 @@ module mxfp_harness #(
   logic [W-1:0] mx_data_in [0:DOT_LEN-1];
   always_comb for (int j = 0; j < DOT_LEN; j++) mx_data_in[j] = dut_vec[j*W +: W];
 
-  mxfp_dot #(
-    .M(M), .E(E), .E_SHARED(8), .FP_BIAS(1), .SH_BIAS(127), .PIPE(PIPE), .DOT_LEN(DOT_LEN)
-  ) dut (
-    .clk(clk),
-    .rst(dut_rst),
-    .load_en(dut_load_al),
-    .valid_in(dut_valid_al),
-    .mx_data_in(mx_data_in),
-    .shared_exponent(dut_exp),
-    .fp32_dot_out_col1(dut_out1),
-    .fp32_dot_out_col2(dut_out2),
-    .valid_out(dut_valid_out),
-    .fp32_flags_col1(),
-    .fp32_flags_col2()
-  );
+  generate if (DUT_KIND == 0) begin : g_mxfp
+    mxfp_dot #(
+      .M(M), .E(E), .E_SHARED(8), .FP_BIAS(1), .SH_BIAS(127), .PIPE(PIPE), .DOT_LEN(DOT_LEN)
+    ) dut (
+      .clk(clk), .rst(dut_rst), .load_en(dut_load_al), .valid_in(dut_valid_al),
+      .mx_data_in(mx_data_in), .shared_exponent(dut_exp),
+      .fp32_dot_out_col1(dut_out1), .fp32_dot_out_col2(dut_out2), .valid_out(dut_valid_out),
+      .fp32_flags_col1(), .fp32_flags_col2());
+  end else begin : g_bfp
+    bfp_dot #(.PIPE(PIPE), .DOT_LEN(DOT_LEN)) dut (
+      .clk(clk), .rst(dut_rst), .load_en(dut_load_al), .valid_in(dut_valid_al),
+      .int8_in(mx_data_in), .shared_exponent(dut_exp),
+      .fp32_dot_out_col1(dut_out1), .fp32_dot_out_col2(dut_out2), .valid_out(dut_valid_out),
+      .fp32_flags_col1(), .fp32_flags_col2());
+  end endgenerate
 
 endmodule
 

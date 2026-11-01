@@ -21,13 +21,16 @@ puts "master: $m"
 
 set id [R $m 0x000]
 puts [format "ID       = 0x%08X (expect 0x4D58000x)" $id]
-if {[expr {$id & 0xFFFFFFFF}] != 0x4D580002 && [expr {$id & 0xFFFFFFFF}] != 0x4D580001} { error "harness ID mismatch" }
+if {[expr {($id & 0xFFFFFF00)}] != 0x4D580000} { error "harness ID mismatch" }
 set mode [expr {[info exists ::env(MX_MODE)] ? $::env(MX_MODE) : 3}]
 W $m 0x008 $mode
 puts [format "MODE     = 0x%02X (bit0 two_load, bit1 pipe_align, bit2 loada_zero, bit3 swap_cols, bits7-4 extra reset)" [expr {[R $m 0x008] & 0xFF}]]
 set fmt [R $m 0x004]
-puts [format "FORMAT   = E%d M%d (data file E%d M%d)" [expr {($fmt >> 8) & 0xFF}] [expr {$fmt & 0xFF}] $::E $::M]
-if {[expr {($fmt >> 8) & 0xFF}] != $::E || [expr {$fmt & 0xFF}] != $::M} { error "bitstream format does not match data file" }
+set hw_kind [expr {($fmt >> 16) & 0xFF}]; set hw_e [expr {($fmt >> 8) & 0xFF}]; set hw_m [expr {$fmt & 0xFF}]
+if {![info exists ::KIND]} { set ::KIND 0 }
+puts [format "FORMAT   = kind %d E%d M%d (data file kind %d E%d M%d)" $hw_kind $hw_e $hw_m $::KIND $::E $::M]
+if {$hw_kind != $::KIND} { error "bitstream DUT kind does not match data file" }
+if {$::KIND == 0 && ($hw_e != $::E || $hw_m != $::M)} { error "bitstream format does not match data file" }
 
 # --- DUT clock measurement: free-running counter over ~1 s of host time
 set c0 [R $m 0x006]; set t0 [clock milliseconds]
