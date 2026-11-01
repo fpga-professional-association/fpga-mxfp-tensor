@@ -116,7 +116,7 @@ def main():
 
     if a.text == "wikitext":
         from datasets import load_dataset
-        ds = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
+        ds = load_dataset("Salesforce/wikitext", "wikitext-2-raw-v1", split="test")
         text = "\n\n".join(ds["text"])
     else:
         text = open(a.text, encoding="utf-8").read()

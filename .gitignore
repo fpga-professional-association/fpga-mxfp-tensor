@@ -33,3 +33,4 @@ sa_venv/
 # OS
 Thumbs.db
 .DS_Store
+results_quant_*.log

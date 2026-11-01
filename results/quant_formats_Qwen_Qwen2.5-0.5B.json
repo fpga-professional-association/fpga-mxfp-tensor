@@ -1,0 +1,48 @@
+{
+ "model": "Qwen/Qwen2.5-0.5B",
+ "tokens": 32768,
+ "seqlen": 1024,
+ "quantized_params": 357826560,
+ "results": {
+  "bf16": {
+   "ppl": 14.375329765777384,
+   "bits_per_weight": 16,
+   "seconds": 18.633843183517456
+  },
+  "int8_bfp_g32": {
+   "ppl": 14.410743147129491,
+   "bits_per_weight": 8.25,
+   "seconds": 2.9324936866760254
+  },
+  "mxfp4_g32": {
+   "ppl": 17.913860772929855,
+   "bits_per_weight": 4.25,
+   "seconds": 3.0225632190704346
+  },
+  "int4_bfp_g32": {
+   "ppl": 21.795392386252708,
+   "bits_per_weight": 4.25,
+   "seconds": 2.882960557937622
+  },
+  "int4_bfp_g10": {
+   "ppl": 17.92913289106325,
+   "bits_per_weight": 4.8,
+   "seconds": 2.829381227493286
+  },
+  "int4_bfp_g20": {
+   "ppl": 19.974271015014917,
+   "bits_per_weight": 4.4,
+   "seconds": 2.7992312908172607
+  },
+  "int4_bfp_g40": {
+   "ppl": 23.36733028296512,
+   "bits_per_weight": 4.2,
+   "seconds": 2.851470947265625
+  },
+  "int5_bfp_g32": {
+   "ppl": 15.590479874480149,
+   "bits_per_weight": 5.25,
+   "seconds": 2.832296371459961
+  }
+ }
+}

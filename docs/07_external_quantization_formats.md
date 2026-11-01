@@ -127,3 +127,48 @@ conversion logic and delivering higher sustained FPGA throughput.
   bandwidth, and decoder ALMs.
 - FP12AGX/FP13AGX names and the "Altera preferred format" table are the note's; we have not
   verified them against FPGA AI Suite documentation yet.
+
+## Results so far (2026-10-31)
+
+### PTQ accuracy, weight-only, Qwen2.5-0.5B, WikiText-2 test, 32,768 tokens, seqlen 1,024
+
+`scripts/quant_formats.py`, RTX 5070. All 168 linear layers inside the transformer blocks are
+fake-quantized (357.8M parameters); embeddings, lm_head and norms stay bf16. Shared scales are
+powers of two in every format. No calibration, no QAT.
+
+| Format | Group | Bits/weight | Perplexity | vs bf16 |
+|---|---|---|---|---|
+| bf16 | - | 16.00 | 14.375 | - |
+| INT8-BFP | 32 | 8.25 | 14.411 | +0.3% |
+| INT5-BFP | 32 | 5.25 | 15.590 | +8.5% |
+| MXFP4 E2M1 | 32 | 4.25 | 17.914 | +24.6% |
+| INT4-BFP | 10 | 4.80 | 17.929 | +24.7% |
+| INT4-BFP | 20 | 4.40 | 19.974 | +39.0% |
+| INT4-BFP | 32 | 4.25 | 21.795 | +51.6% |
+| INT4-BFP | 40 | 4.20 | 23.367 | +62.6% |
+
+What this says:
+
+- At equal storage (group 32, 4.25 bits), INT4-BFP is clearly worse than MXFP4: 21.8 vs 17.9.
+  The per-element exponent in E2M1 buys real dynamic range inside a block. The note's hope that
+  simpler INT4-BFP hardware comes free does not hold for PTQ.
+- INT4-BFP only catches MXFP4 at group 10, the Agilex 5 DSP tile size, and then costs 0.55 more
+  bits per weight (4.80 vs 4.25). That is the DSP-matched group size the note suggested, and it
+  is accuracy-neutral against MXFP4 at a 13% storage penalty.
+- INT5-BFP at group 32 (5.25 bits) is far better than either 4-bit format. Since the paper's
+  tensor-mode path already carries E2M1 as 5-bit signed integers, a 5-bit integer format costs
+  the same DSP lanes as MXFP4, needs no decoder, and here loses only 8.5% perplexity to bf16.
+  That is probably the most interesting Agilex-native format from this table.
+- INT8-BFP is essentially lossless (0.3%), which supports Altera's choice of it as the AI Suite
+  default and the W4A8 split: keep activations at INT8-BFP, spend the effort on the weights.
+- One model, one metric, no QAT. The ordering is what a QAT study should start from, not a
+  conclusion about what QAT can recover.
+
+### Decoder cost on silicon
+
+`bfp_dot` (the paper's cascade with the MXFP decoder removed, raw int8 lanes) standalone fit on
+Agilex 3 A3CY100: 244 ALMs, 4 DSPs, 342.94 MHz, against the paper's E2M1 `mxfp_dot` at 199 ALMs.
+The decoder-free unit is bigger, not smaller: the MXFP4 path pipelines 32 x 4-bit inputs and
+expands to 8-bit lanes only at the DSP, while the raw path pipelines 32 x 8 bits through the same
+stages. The E2M1 decoder itself is a handful of LUTs. So "no decoder" is not an area argument on
+this block; the W4A8-BFP case rests on memory footprint and bandwidth alone.
