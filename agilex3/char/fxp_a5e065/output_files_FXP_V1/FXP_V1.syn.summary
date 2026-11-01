@@ -1,0 +1,9 @@
+Synthesis Status : Successful - Sat Oct 31 23:03:20 2026
+Revision Name : FXP_V1
+Top-level Entity Name : fxp_dot
+Family : Agilex 5
+Quartus Prime Version : 26.1.0 Build 110 03/26/2026 SC Pro Edition
+Device : A5EC065BB32AE4S
+Logic utilization estimate (in ALMs) : 1,066 / 222,400 ( < 1 % )
+Total dedicated logic registers : 1413
+Estimated DSP Blocks Post-Merging : 4

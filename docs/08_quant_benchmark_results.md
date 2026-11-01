@@ -72,17 +72,27 @@ per the spec's power-of-two rule), so AWQ/GPTQ-style scale search could close so
 | V0 paper E2M1 | A3CY100 | 199 / 4 / 343 | same |
 | V3/V4 raw int8 lanes tensor-FP (`bfp_dot`) | A5E065 | 243 / 4 / 458 | 64/64 bit-exact W8A8-BFP and W4A8-BFP |
 | V3/V4 | A3CY100 | 244 / 4 / 343 | same |
-| V1 tensor fixed-point + fabric rescale (`fxp_dot`) | A3CY100 | harness build, 4 DSPs | in debug: column 1 sums correct, latency 10 not 11, column 2 mapping differs from the authors' simulation model; see below |
+| V1 tensor fixed-point + fabric rescale (`fxp_dot`) | A5E065 | 701 / 4 / 324 | - |
+| V1 | A3CY100 | 703 / 4 / 254 | 64/64 bit-exact for W8A8-BFP, W4A8-BFP and MXFP4 (host-decoded lanes), latency 13 |
 
-V1 findings so far from the per-cycle trace: the fixed-point cascade delivers sums one cycle
-earlier than the floating-point cascade (10 cycles), and the int32 for the weights loaded in the
-first low cycle of the preload appears on the result bits the authors' `fxp_aitb.sv` assigns to
-the other column. The second column's integers do not match any expected sum. A rebuild with a
-raw-sum debug path is in progress to read the int32 values directly. The practical consequence
-is already visible: V1 moves the shared-exponent bookkeeping into the fabric (two exponent
-registers, an exponent adder and a 3-stage int32-to-fp32 converter per column) that the
-tensor-FP mode does for free, and the harness build missed timing at 240 MHz until that converter
-was pipelined. H5's "may outperform" looks unlikely on this block.
+V1 answers spec H5 in the negative on this block. The fixed-point tensor cascade itself is one
+cycle faster than the floating-point cascade (10 vs 11 cycles to the int32 sums), but doing the
+shared-exponent bookkeeping and the int32-to-fp32 conversion in the fabric costs 3.5x the ALMs of
+the paper's unit (703 vs 199 on Agilex 3, 701 vs 207 on Agilex 5), loses 26% to 30% of the
+standalone fmax (254 vs 343 MHz; 324 vs 458 MHz) with the converter already pipelined to three
+stages, and adds two cycles of latency (13 vs 11). The DSP count is identical. The tensor-FP
+mode does that work inside the block for free, so for one dot-32 per group V1 has no advantage.
+Where V1 could still matter is the spec's V2 idea: keeping several groups' int32 sums in the
+fabric and applying one scale per output row, which the FP mode cannot do; that is unmeasured.
+
+Debug record, kept because it is the kind of thing the next person will hit: the first three V1
+builds failed on the board for two reasons of mine, not the silicon's. The unit delayed load_en
+by an extra PIPE stage internally while the harness already delays it, so the DSP latched its
+weight banks one cycle late (one bank got the first activation vector; the raw-sum trace showed
+exactly the sum of a0 times a_k), and the fabric exponent capture then used a copy of load_en
+delayed once more than the exponent. The raw-int32 debug mode (`MODE` bit 8) made both visible in
+one trace each. An earlier draft of this document reported a column-mapping difference between
+fixed-point and floating-point modes; there is none.
 
 Not yet run from spec section 7: fitter seeds 1/2/3, the 350/400/450/500 MHz clock sweep, V2,
 V5 and V6, and the K/M/N GEMM tile matrix. Standalone unit fmax on Agilex 3 is pinned by the

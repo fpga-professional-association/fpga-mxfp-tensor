@@ -8,9 +8,11 @@
 // cycle, column 1 on the following cycle) and held; the activation exponent travels with the data.
 // result_col = S_col * 2^(Xw_col - 127 + Xa - 127) rounded once to fp32.
 //
-// Latency: data to int32 sum through the 4-block cascade is the same 11 cycles as the FP mode
-// (5 per block input-to-output, 2 per cascade hop, blocks staggered by 2), then 2 cycles for
-// the fabric scale (3 stages), so valid_out is 13 cycles after valid_in. Verified on silicon via the trace.
+// Latency measured on silicon: data to int32 sum through the 4-block cascade is 10 cycles (one
+// less than the FP mode, which adds an fp32 stage), then 3 cycles for the fabric rescale, so
+// valid_out is 13 cycles after valid_in. The preload protocol and the result-slot mapping are the
+// same as in tensor_fp mode (an earlier version of this file delayed load_en by an extra PIPE
+// stage and misread that as a silicon difference).
 `default_nettype none
 module fxp_dot #(
   parameter int PIPE = 1,
@@ -53,24 +55,29 @@ module fxp_dot #(
     end
   endgenerate
   pipeline #(.W(8), .STAGES(PIPE)) PE (.clk(clk), .rst(rst), .pipe_in(shared_exponent), .pipe_out(e_in));
-  pipeline #(.W(1), .STAGES(PIPE)) PL (.clk(clk), .rst(rst), .pipe_in(load_en), .pipe_out(ld));
-  pipeline #(.W(1), .STAGES(2)) L1 (.clk(clk), .rst(rst), .pipe_in(ld), .pipe_out(load_ff[1]));
-  pipeline #(.W(1), .STAGES(4)) L2 (.clk(clk), .rst(rst), .pipe_in(ld), .pipe_out(load_ff[2]));
-  pipeline #(.W(1), .STAGES(6)) L3 (.clk(clk), .rst(rst), .pipe_in(ld), .pipe_out(load_ff[3]));
+  // DSP load: undelayed like the paper's mxfp_dot. The harness pre-delays load_en by PIPE so it
+  // reaches this module aligned with the PIPE-delayed data and exponent (d, e_in); the fabric
+  // exponent capture therefore also uses load_en directly.
+  assign ld = load_en;
+  pipeline #(.W(1), .STAGES(2)) L1 (.clk(clk), .rst(rst), .pipe_in(load_en), .pipe_out(load_ff[1]));
+  pipeline #(.W(1), .STAGES(4)) L2 (.clk(clk), .rst(rst), .pipe_in(load_en), .pipe_out(load_ff[2]));
+  pipeline #(.W(1), .STAGES(6)) L3 (.clk(clk), .rst(rst), .pipe_in(load_en), .pipe_out(load_ff[3]));
 
   // ---- weight exponent capture: 2-cycle preload. ld high two cycles: the data in the 2nd high
   // cycle is column 2, the data in the first low cycle is column 1.
+  // Weight exponent capture, same 2-cycle data-feed protocol as tensor_fp mode: the data in the
+  // second load_en-high cycle is column 2, the data in the first low cycle is column 1.
   logic ld_d;
   logic [7:0] ew_col1, ew_col2;
   always_ff @(posedge clk) begin
     ld_d <= ld;
-    if (ld && ld_d)   ew_col2 <= e_in;   // second consecutive load cycle
-    if (!ld && ld_d)  ew_col1 <= e_in;   // first cycle after load_en falls
+    if (ld && ld_d)  ew_col2 <= e_in;
+    if (!ld && ld_d) ew_col1 <= e_in;
   end
 
   // ---- 4-block tensor fixed-point cascade (data_feed_in preload like the paper's design)
   fxp_aitb_blk #(.CHAIN_MODE("zero_tensor_chain_output"), .ZERO_EN(1)) dot0 (
-    .clk(clk), .rst(rst), .load_en(ld), .data_in(d[0:9]),
+    .clk(clk), .rst(rst), .load_en(load_en), .data_in(d[0:9]),
     .cascade_in_col_1(32'd0), .cascade_in_col_2(32'd0),
     .cascade_out_col_1(casc1[0]), .cascade_out_col_2(casc2[0]), .res_col_1(), .res_col_2());
   fxp_aitb_blk dot1 (

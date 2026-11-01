@@ -87,7 +87,7 @@ module mxfp_harness #(
   logic [IDXW:0] nvec;
   logic [31:0]   cycles;
   logic [63:0]   free_cnt;
-  logic [8:0]    mode;
+  logic [9:0]    mode;
   logic          err_overrun;
   logic          start_q, dut_rst_req;
 
@@ -97,13 +97,14 @@ module mxfp_harness #(
   wire mode_swap      = mode[3];
   wire [3:0] mode_rst = mode[7:4];
   wire mode_raw = mode[8];          // DUT_KIND 2 only: raw int32 sums on the output ports
+  wire mode_fxp_ld = mode[9];       // fixed-point preload: banks latch the 1st and 2nd cycles AFTER load_en falls
 
   // ------------------------------------------------------------------ Avalon write
   always_ff @(posedge clk) begin
     start_q     <= 1'b0;
     dut_rst_req <= 1'b0;
     if (!rst_n) begin
-      nvec <= 'd1; mode <= 9'h003;
+      nvec <= 'd1; mode <= 10'h003;
       w_col1 <= '0; w_col2 <= '0; e_col1 <= 8'd127; e_col2 <= 8'd127;
     end else if (av_write) begin
       case (av_address[10:8])
@@ -111,7 +112,7 @@ module mxfp_harness #(
           case (av_address[7:0])
             8'h01: begin start_q <= av_writedata[0]; dut_rst_req <= av_writedata[1]; end
             8'h03: nvec <= av_writedata[IDXW:0];
-            8'h08: mode <= av_writedata[8:0];
+            8'h08: mode <= av_writedata[9:0];
             default: ;
           endcase
         end
@@ -158,7 +159,7 @@ module mxfp_harness #(
           7'h05: rd_mux = cycles;
           7'h06: rd_mux = free_cnt[31:0];
           7'h07: rd_mux = free_cnt[63:32];
-          7'h08: rd_mux = {23'd0, mode};
+          7'h08: rd_mux = {22'd0, mode};
           default: rd_mux = 32'h0;
         endcase
       end
@@ -186,7 +187,7 @@ module mxfp_harness #(
   end
 
   // ------------------------------------------------------------------ sequencer
-  typedef enum logic [2:0] {S_IDLE, S_RST, S_LOADA, S_LOAD2, S_LOAD1, S_STREAM, S_DRAIN, S_DONE} state_t;
+  typedef enum logic [3:0] {S_IDLE, S_RST, S_LOADA, S_LOAD2, S_LOAD1, S_LOAD1B, S_STREAM, S_DRAIN, S_DONE} state_t;
   state_t state;
 
   logic        s0_load, s0_valid, s0_sel_w2, s0_sel_w1, s0_zero;
@@ -264,6 +265,12 @@ module mxfp_harness #(
         S_LOAD1: begin
           cycles <= cycles + 1;
           s0_load <= 1'b0; s0_sel_w1 <= 1'b1;
+          s0_idx <= '0;
+          state <= mode_fxp_ld ? S_LOAD1B : S_STREAM;
+        end
+        S_LOAD1B: begin // fixed-point tensor mode: column-2 weights in the second cycle after load_en falls
+          cycles <= cycles + 1;
+          s0_load <= 1'b0; s0_sel_w2 <= 1'b1;
           s0_idx <= '0;
           state <= S_STREAM;
         end

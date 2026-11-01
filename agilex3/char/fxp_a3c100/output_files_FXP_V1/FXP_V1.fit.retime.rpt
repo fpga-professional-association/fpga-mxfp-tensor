@@ -1,0 +1,303 @@
+Fitter Retime Stage Report for FXP_V1
+Sat Oct 31 23:02:43 2026
+Quartus Prime Version 26.1.0 Build 110 03/26/2026 SC Pro Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Hyper-Retimer Settings
+  3. Reset Sequence Requirement
+  4. Retiming Limit Summary
+  5. Critical Chain Summary for Clock Domain clk
+  6. Retime Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2026  Altera Corporation. All rights reserved.
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, the Altera Quartus Prime License Agreement,
+the Altera IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Altera and sold by Altera or its authorized distributors.  Please
+refer to the Altera Software License Subscription Agreements 
+on the Quartus Prime software download page.
+
+
+
++--------------------------------------------------+
+; Hyper-Retimer Settings                           ;
++------------------------+---------+---------------+
+; Option                 ; Setting ; Default Value ;
++------------------------+---------+---------------+
+; Enable Auto-Pipelining ; On      ; On            ;
++------------------------+---------+---------------+
+
+
++------------------------------------------+
+; Reset Sequence Requirement               ;
++------------+-----------------------------+
+; Clock Name ; Number of additional cycles ;
++------------+-----------------------------+
+; clk        ; 3                           ;
++------------+-----------------------------+
+Note: Due to retiming optimizations, a clock domain may require a longer reset sequence to ensure correct functionality.  The table above indicates the minimum number of additional reset sequence cycles needed for each clock domain.
+
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Retiming Limit Summary                                                                                                                                                        ;
++------------------+------------------------+-----------------------------------------------------------------------------------------------------------------------------------+
+; Clock Transfer   ; Limiting Reason        ; Recommendation                                                                                                                    ;
++------------------+------------------------+-----------------------------------------------------------------------------------------------------------------------------------+
+; Clock Domain clk ; Insufficient Registers ; See the Fast Forward Timing Closure Recommendations report for step-by-step suggestions for RTL changes and estimated performance ;
++------------------+------------------------+-----------------------------------------------------------------------------------------------------------------------------------+
+
+
+Critical Chain Summary for Clock Domain clk
+===============================================================================
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Recommendations for Critical Chain                                                                                                                                                                                                                                                                          ;
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Recommendation                                                                                                                                                                                                                                                                                              ;
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; The critical chain is limited by: Insufficient Registers                                                                                                                                                                                                                                                    ;
+;                                                                                                                                                                                                                                                                                                             ;
+; Reduce the delay of 'Long Paths' in the chain                                                                                                                                                                                                                                                               ;
+;   or insert more pipeline stages for 'Long Paths' in the chain                                                                                                                                                                                                                                              ;
+;   or remove retiming restrictions                                                                                                                                                                                                                                                                           ;
+;    Refer to <a href='https://docs.altera.com/r/docs/683353/25.1.1/hyperflex-architecture-high-performance-design-handbook/insufficient-registers'>Insufficient Registers</a> in the <i>Altera Hyperflex Architecture High-Performance Design Handbook</i> for more information.                             ;
+;                                                                                                                                                                                                                                                                                                             ;
+; Retiming Restrictions at Register #1:                                                                                                                                                                                                                                                                       ;
+;  dot3|tennm_dsp_prime_component                                                                                                                                                                                                                                                                             ;
+;   Node uses an asynchronous clear port                                                                                                                                                                                                                                                                      ;
+;   Node is in a block that cannot be retimed.                                                                                                                                                                                                                                                                ;
+;   Manually adjust your RTL design to add additional registers or re-position registers along the path to balance slack.                                                                                                                                                                                     ;
+;                                                                                                                                                                                                                                                                                                             ;
+; Add additional pipeline stages at Register #6:                                                                                                                                                                                                                                                              ;
+;  SA1|fp32[24]                                                                                                                                                                                                                                                                                               ;
+;  Add additional pipeline stages along these paths AFTER the sources                                                                                                                                                                                                                                         ;
+;   from bus SA1|fp32[31:0] to bus fp32_dot_out_col1[31:0]                                                                                                                                                                                                                                                    ;
+;                                                                                                                                                                                                                                                                                                             ;
+; The critical chain has Domain Boundary Entry/Exit Constraint                                                                                                                                                                                                                                                ;
+;    Refer to <a href='https://docs.altera.com/r/docs/683353/25.1.1/hyperflex-architecture-high-performance-design-handbook/domain-boundary-entry-and-domain-boundary-exit'>Domain Boundary Entry/Exit</a> in the <i>Altera Hyperflex Architecture High-Performance Design Handbook</i> for more information. ;
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
++--------------------------------------------------------------------------------------------------------------------------------------------------+
+; Critical Chain Details                                                                                                                           ;
++--------------------------+-------------------------+-------------+-------------------------------------------------------------------------------+
+; Path Info                ; Register                ; Register ID ; Element                                                                       ;
++--------------------------+-------------------------+-------------+-------------------------------------------------------------------------------+
+; Retiming Restriction     ; REG (DSP)               ; #1          ; dot3|tennm_dsp_prime_component~reg                                            ;
+; Long Path                ;                         ;             ; dot3|tennm_dsp_prime_component|result_l[3]                                    ;
+; Long Path                ;                         ;             ; dot3|tennm_dsp_prime_component~MP_MAC_RE_X35_Y44_N0_I137                      ;
+; Long Path                ;                         ;             ; dot3|tennm_dsp_prime_component~C1_X35_Y44_N0_I4                               ;
+; Long Path                ;                         ;             ; dot3|tennm_dsp_prime_component~R4_X36_Y45_N0_I1                               ;
+; Long Path                ;                         ;             ; dot3|tennm_dsp_prime_component~LOCAL_INTERCONNECT_X39_Y45_N0_I13              ;
+; Long Path                ; Bypassed Hyper-Register ;             ; dot3|tennm_dsp_prime_component~BLOCK_INPUT_MUX_PASSTHROUGH_X39_Y45_N0_I13     ;
+; Long Path                ;                         ;             ; dot3|tennm_dsp_prime_component~LAB_RE_X39_Y45_N0_I12                          ;
+; Long Path                ;                         ;             ; SA1|add_0~151|datab                                                           ;
+; Long Path                ; Bypassed Hyper-Register ;             ; SA1|add_0~81|cout                                                             ;
+; Long Path                ;                         ;             ; SA1|add_0~81~_LAB_RE_X39_Y45_N0_I154                                          ;
+; Long Path                ;                         ;             ; SA1|add_0~81~_LAB_RE_X39_Y44_N0_I153                                          ;
+; Long Path                ;                         ;             ; SA1|add_0~86|cin                                                              ;
+; Long Path                ;                         ;             ; SA1|add_0~1|cout                                                              ;
+; Long Path                ;                         ;             ; SA1|add_0~6|cin                                                               ;
+; Long Path                ;                         ;             ; SA1|add_0~11|sumout                                                           ;
+; Long Path                ;                         ;             ; SA1|add_0~11~cw_ml_mlab/laboutb[3]                                            ;
+; Long Path                ;                         ;             ; SA1|add_0~11~_LAB_RE_X39_Y44_N0_I112                                          ;
+; Long Path                ;                         ;             ; SA1|add_0~11~_R1_X39_Y44_N0_I20                                               ;
+; Long Path                ;                         ;             ; SA1|add_0~11~_R0_X38_Y44_N0_I34                                               ;
+; Long Path                ;                         ;             ; SA1|add_0~11~_LOCAL_INTERCONNECT_X38_Y44_N0_I15                               ;
+; Long Path                ;                         ;             ; SA1|add_0~11_BLOCK_INPUT_MUX_PASSTHROUGH_X38_Y44_N0_I12_dff|d                 ;
+; Long Path (Critical)     ; Hyper-Register          ; #2          ; SA1|add_0~11_BLOCK_INPUT_MUX_PASSTHROUGH_X38_Y44_N0_I12_dff                   ;
+; Long Path (Critical)     ;                         ;             ; SA1|add_0~11_BLOCK_INPUT_MUX_PASSTHROUGH_X38_Y44_N0_I12_dff|q                 ;
+; Long Path (Critical)     ;                         ;             ; SA1|add_0~11~_BLOCK_INPUT_MUX_PASSTHROUGH_X38_Y44_N0_I12                      ;
+; Long Path (Critical)     ;                         ;             ; SA1|add_0~11~_LAB_RE_X38_Y44_N0_I11                                           ;
+; Long Path (Critical)     ;                         ;             ; SA1|i175~0|dataa                                                              ;
+; Long Path (Critical)     ;                         ;             ; SA1|i175~0|combout                                                            ;
+; Long Path (Critical)     ;                         ;             ; SA1|i175~0~_LAB_RE_X38_Y44_N0_I135                                            ;
+; Long Path (Critical)     ;                         ;             ; SA1|i175~0~_LOCAL_INTERCONNECT_X38_Y44_N0_I17                                 ;
+; Long Path (Critical)     ; Bypassed Hyper-Register ;             ; SA1|i175~0~_BLOCK_INPUT_MUX_PASSTHROUGH_X38_Y44_N0_I27                        ;
+; Long Path (Critical)     ;                         ;             ; SA1|i175~0~_LAB_RE_X38_Y44_N0_I31                                             ;
+; Long Path (Critical)     ;                         ;             ; SA1|i236~1|dataf                                                              ;
+; Long Path (Critical)     ;                         ;             ; SA1|i236~1|combout                                                            ;
+; Long Path (Critical)     ;                         ;             ; SA1|lz_q[1]~RTM_22|d                                                          ;
+; Long Path (Critical)     ; Bypassed ALM Register   ;             ; SA1|lz_q[1]~RTM_22~.comb                                                      ;
+; Long Path (Critical)     ;                         ;             ; SA1|lz_q[1]~RTM_22|q                                                          ;
+; Long Path (Critical)     ;                         ;             ; SA1|lz_q[1]~RTM_22~_LAB_RE_X38_Y44_N0_I101                                    ;
+; Long Path (Critical)     ; Bypassed Hyper-Register ;             ; SA1|lz_q[1]~RTM_22~_C4_X38_Y44_N0_I12                                         ;
+; Long Path (Critical)     ;                         ;             ; SA1|lz_q[1]~RTM_22~_LOCAL_INTERCONNECT_X38_Y48_N0_I27                         ;
+; Long Path (Critical)     ; Bypassed Hyper-Register ;             ; SA1|lz_q[1]~RTM_22~_BLOCK_INPUT_MUX_PASSTHROUGH_X38_Y48_N0_I39                ;
+; Long Path (Critical)     ;                         ;             ; SA1|lz_q[1]~RTM_22~_LAB_RE_X38_Y48_N0_I33                                     ;
+; Long Path (Critical)     ;                         ;             ; SA1|i308~3|datad                                                              ;
+; Long Path (Critical)     ;                         ;             ; SA1|i308~3|combout                                                            ;
+; Long Path (Critical)     ;                         ;             ; SA1|i308~3~_LAB_RE_X38_Y48_N0_I138                                            ;
+; Long Path (Critical)     ;                         ;             ; SA1|i308~3~_R1_X39_Y48_N0_I17                                                 ;
+; Long Path (Critical)     ;                         ;             ; SA1|i308~3~_LOCAL_INTERCONNECT_X39_Y48_N0_I24                                 ;
+; Long Path (Critical)     ; Bypassed Hyper-Register ;             ; SA1|i308~3~_BLOCK_INPUT_MUX_PASSTHROUGH_X39_Y48_N0_I32                        ;
+; Long Path (Critical)     ;                         ;             ; SA1|i308~3~_LAB_RE_X39_Y48_N0_I34                                             ;
+; Long Path (Critical)     ;                         ;             ; SA1|i380~10|datac                                                             ;
+; Long Path (Critical)     ;                         ;             ; SA1|i380~10|combout                                                           ;
+; Long Path (Critical)     ;                         ;             ; SA1|i380~10~cw_ml_mlab/laboutt[19]                                            ;
+; Long Path (Critical)     ;                         ;             ; SA1|i380~10~_LAB_RE_X39_Y48_N0_I108                                           ;
+; Long Path (Critical)     ; Bypassed Hyper-Register ;             ; SA1|i380~10~_R4_X40_Y48_N0_I14                                                ;
+; Long Path (Critical)     ;                         ;             ; SA1|i380~10~_R0_X43_Y48_N0_I34                                                ;
+; Long Path (Critical)     ;                         ;             ; SA1|i380~10~_R0_X43_Y48_N0_I15                                                ;
+; Long Path (Critical)     ;                         ;             ; SA1|i380~10~_R0_X43_Y48_N0_I52                                                ;
+; Long Path (Critical)     ;                         ;             ; SA1|i380~10~_R0_X43_Y48_N0_I48                                                ;
+; Long Path (Critical)     ;                         ;             ; SA1|i380~10~_LOCAL_INTERCONNECT_X43_Y48_N0_I35                                ;
+; Long Path (Critical)     ; Bypassed Hyper-Register ;             ; SA1|i380~10~_BLOCK_INPUT_MUX_PASSTHROUGH_X43_Y48_N0_I29                       ;
+; Long Path (Critical)     ;                         ;             ; SA1|i380~10~_LAB_RE_X43_Y48_N0_I28                                            ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~66|datab                                                     ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~76|cout                                                      ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~81|cin                                                       ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~86|cout                                                      ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~91|cin                                                       ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~96|cout                                                      ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~101|cin                                                      ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~106|cout                                                     ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~111|cin                                                      ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~116|cout                                                     ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~121|cin                                                      ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~121|sumout                                                   ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~121~cw_ml_mlab/laboutb[16]                                   ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~121~_LAB_RE_X43_Y48_N0_I125                                  ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~121~_C1_X43_Y47_N0_I37                                       ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~121~_LOCAL_INTERCONNECT_X43_Y47_N0_I76                       ;
+; Long Path (Critical)     ; Bypassed Hyper-Register ;             ; SA1|shift_left_0~121~_BLOCK_INPUT_MUX_PASSTHROUGH_X43_Y47_N0_I7               ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~121~_LAB_RE_X43_Y47_N0_I1                                    ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~22|datad                                                     ;
+; Long Path (Critical)     ;                         ;             ; SA1|shift_left_0~22|combout                                                   ;
+; Long Path (Critical)     ;                         ;             ; SA1|norm_n[28]~RTM_6|d                                                        ;
+; Long Path (Critical)     ; ALM Register            ; #3          ; SA1|norm_n[28]~RTM_6                                                          ;
+; ------------------------ ; ----------------------- ; ----------- ; ----------------------------------------------------------------------------- ;
+; Extend to locatable node ; ALM Register            ; #4          ; SA1|lz_q[5]~RTM_28                                                            ;
+; Extend to locatable node ;                         ;             ; SA1|lz_q[5]~RTM_28|q                                                          ;
+; Extend to locatable node ;                         ;             ; SA1|lz_q[5]~RTM_28~_LAB_RE_X39_Y47_N0_I121                                    ;
+; Extend to locatable node ;                         ;             ; SA1|lz_q[5]~RTM_28~_LOCAL_INTERCONNECT_X39_Y47_N0_I69                         ;
+; Extend to locatable node ; Bypassed Hyper-Register ;             ; SA1|lz_q[5]~RTM_28~_BLOCK_INPUT_MUX_PASSTHROUGH_X39_Y47_N0_I37                ;
+; Extend to locatable node ;                         ;             ; SA1|lz_q[5]~RTM_28~_LAB_RE_X39_Y47_N0_I36                                     ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3|datab                                                              ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3|combout                                                            ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~cw_ml_mlab/laboutt[17]                                             ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~_LAB_RE_X39_Y47_N0_I106                                            ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~_R1_X40_Y47_N0_I19                                                 ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~_R2_X41_Y47_N0_I9                                                  ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~_R1_X43_Y47_N0_I19                                                 ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~_LOCAL_INTERCONNECT_X43_Y47_N0_I38                                 ;
+; Retiming Dependency      ; Bypassed Hyper-Register ;             ; SA1|i380~3~_BLOCK_INPUT_MUX_PASSTHROUGH_X43_Y47_N0_I4                         ;
+; Retiming Dependency      ;                         ;             ; SA1|i380~3~_LAB_RE_X43_Y47_N0_I3                                              ;
+; Retiming Dependency      ;                         ;             ; SA1|shift_left_0~22|dataa                                                     ;
+; Retiming Dependency      ;                         ;             ; SA1|shift_left_0~22|combout                                                   ;
+; Retiming Dependency      ;                         ;             ; SA1|norm_n[28]~RTM_6|d                                                        ;
+; Retiming Dependency      ; ALM Register            ; #3          ; SA1|norm_n[28]~RTM_6                                                          ;
+; ------------------------ ; ----------------------- ; ----------- ; ----------------------------------------------------------------------------- ;
+; Extend to locatable node ; ALM Register            ; #4          ; SA1|lz_q[5]~RTM_28                                                            ;
+; Extend to locatable node ;                         ;             ; SA1|lz_q[5]~RTM_28|q                                                          ;
+; Extend to locatable node ;                         ;             ; SA1|lz_q[5]~RTM_28~_LAB_RE_X39_Y47_N0_I121                                    ;
+; Extend to locatable node ;                         ;             ; SA1|lz_q[5]~RTM_28~_LOCAL_INTERCONNECT_X39_Y47_N0_I69                         ;
+; Extend to locatable node ; Bypassed Hyper-Register ;             ; SA1|lz_q[5]~RTM_28~_BLOCK_INPUT_MUX_PASSTHROUGH_X39_Y47_N0_I37                ;
+; Extend to locatable node ;                         ;             ; SA1|lz_q[5]~RTM_28~_LAB_RE_X39_Y47_N0_I36                                     ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3|datab                                                              ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3|combout                                                            ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~cw_ml_mlab/laboutt[17]                                             ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~_LAB_RE_X39_Y47_N0_I106                                            ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~_R1_X40_Y47_N0_I19                                                 ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~_R2_X41_Y47_N0_I9                                                  ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~_R1_X43_Y47_N0_I19                                                 ;
+; Extend to locatable node ;                         ;             ; SA1|i380~3~_LOCAL_INTERCONNECT_X43_Y47_N0_I38                                 ;
+; Long Path                ; Bypassed Hyper-Register ;             ; SA1|i380~3~_BLOCK_INPUT_MUX_PASSTHROUGH_X43_Y47_N0_I4                         ;
+; Long Path                ;                         ;             ; SA1|i380~3~_LAB_RE_X43_Y47_N0_I3                                              ;
+; Long Path                ;                         ;             ; SA1|shift_left_0~20|dataa                                                     ;
+; Long Path                ;                         ;             ; SA1|shift_left_0~20|combout                                                   ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE|d                                                 ;
+; Long Path                ; Bypassed ALM Register   ;             ; SA1|norm_n[29]~RTMDUPLICATE~.comb                                             ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE|q                                                 ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE~_LAB_RE_X43_Y47_N0_I91                            ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE~_R0_X43_Y47_N0_I5                                 ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE~_R0_X43_Y47_N0_I38                                ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE~_R0_X43_Y47_N0_I33                                ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE~_LOCAL_INTERCONNECT_X43_Y47_N0_I78                ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE_Duplicate|d                                       ;
+; Long Path                ; Hyper-Register          ; #5          ; SA1|norm_n[29]~RTMDUPLICATE_Duplicate                                         ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE_Duplicate|q                                       ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE~_BLOCK_INPUT_MUX_PASSTHROUGH_X43_Y47_N0_I68       ;
+; Long Path                ;                         ;             ; SA1|norm_n[29]~RTMDUPLICATE~_LAB_RE_X43_Y47_N0_I67                            ;
+; Long Path                ;                         ;             ; SA1|shift_left_0~23|dataa                                                     ;
+; Long Path                ;                         ;             ; SA1|shift_left_0~23|combout                                                   ;
+; Long Path                ;                         ;             ; SA1|shift_left_0~23~_LAB_RE_X43_Y47_N0_I121                                   ;
+; Long Path                ;                         ;             ; SA1|shift_left_0~23~_R0_X43_Y47_N0_I56                                        ;
+; Long Path                ;                         ;             ; SA1|shift_left_0~23~_R1_X43_Y47_N0_I2                                         ;
+; Long Path                ;                         ;             ; SA1|shift_left_0~23~_C1_X42_Y46_N0_I3                                         ;
+; Long Path                ;                         ;             ; SA1|shift_left_0~23~_LOCAL_INTERCONNECT_X42_Y46_N0_I12                        ;
+; Long Path                ; Bypassed Hyper-Register ;             ; SA1|shift_left_0~23~_BLOCK_INPUT_MUX_PASSTHROUGH_X42_Y46_N0_I7                ;
+; Long Path                ;                         ;             ; SA1|shift_left_0~23~_LAB_RE_X42_Y46_N0_I1                                     ;
+; Long Path                ;                         ;             ; SA1|add_4~106|datad                                                           ;
+; Long Path                ;                         ;             ; SA1|add_4~111|cout                                                            ;
+; Long Path                ;                         ;             ; SA1|add_4~116|cin                                                             ;
+; Long Path                ;                         ;             ; SA1|add_4~121|cout                                                            ;
+; Long Path                ;                         ;             ; SA1|add_4~11|cin                                                              ;
+; Long Path                ;                         ;             ; SA1|add_4~11|sumout                                                           ;
+; Long Path                ;                         ;             ; SA1|add_4~11~cw_la_lab/laboutt[8]                                             ;
+; Long Path                ;                         ;             ; SA1|add_4~11~_LAB_RE_X42_Y46_N0_I97                                           ;
+; Long Path                ;                         ;             ; SA1|add_4~11~_LOCAL_INTERCONNECT_X42_Y46_N0_I19                               ;
+; Long Path                ; Bypassed Hyper-Register ;             ; SA1|add_4~11~_BLOCK_INPUT_MUX_PASSTHROUGH_X42_Y46_N0_I43                      ;
+; Long Path                ;                         ;             ; SA1|add_4~11~_LAB_RE_X42_Y46_N0_I47                                           ;
+; Long Path                ;                         ;             ; SA1|add_5~1|dataf                                                             ;
+; Long Path                ;                         ;             ; SA1|add_5~1|combout                                                           ;
+; Long Path                ;                         ;             ; SA1|add_5~1~cw_la_lab/laboutb[1]                                              ;
+; Long Path                ;                         ;             ; SA1|add_5~1~_LAB_RE_X42_Y46_N0_I110                                           ;
+; Long Path                ;                         ;             ; SA1|add_5~1~_C1_X42_Y45_N0_I23                                                ;
+; Long Path                ;                         ;             ; SA1|add_5~1~_LOCAL_INTERCONNECT_X42_Y45_N0_I51                                ;
+; Long Path                ; Bypassed Hyper-Register ;             ; SA1|add_5~1~_BLOCK_INPUT_MUX_PASSTHROUGH_X42_Y45_N0_I58                       ;
+; Long Path                ;                         ;             ; SA1|add_5~1~_LAB_RE_X42_Y45_N0_I56                                            ;
+; Long Path                ;                         ;             ; SA1|LessThan_1~2|datae                                                        ;
+; Long Path                ;                         ;             ; SA1|LessThan_1~2|combout                                                      ;
+; Long Path                ;                         ;             ; SA1|LessThan_1~2~cw_la_lab/laboutb[10]                                        ;
+; Long Path                ;                         ;             ; SA1|LessThan_1~2~_LAB_RE_X42_Y45_N0_I119                                      ;
+; Long Path                ;                         ;             ; SA1|LessThan_1~2~_LOCAL_INTERCONNECT_X42_Y45_N0_I61                           ;
+; Long Path                ; Bypassed Hyper-Register ;             ; SA1|LessThan_1~2~_BLOCK_INPUT_MUX_PASSTHROUGH_X42_Y45_N0_I39                  ;
+; Long Path                ;                         ;             ; SA1|LessThan_1~2~_LAB_RE_X42_Y45_N0_I33                                       ;
+; Long Path                ;                         ;             ; SA1|i613~0|datad                                                              ;
+; Long Path                ;                         ;             ; SA1|i613~0|combout                                                            ;
+; Long Path                ;                         ;             ; SA1|i613~0~cw_la_lab/laboutt[19]                                              ;
+; Long Path                ;                         ;             ; SA1|i613~0~_LAB_RE_X42_Y45_N0_I108                                            ;
+; Long Path                ;                         ;             ; SA1|i613~0~_R1_X43_Y45_N0_I19                                                 ;
+; Long Path                ;                         ;             ; SA1|i613~0~_LOCAL_INTERCONNECT_X43_Y45_N0_I38                                 ;
+; Long Path                ;                         ;             ; SA1|i613~0~_BLOCK_INPUT_MUX_PASSTHROUGH_X43_Y45_N0_I80                        ;
+; Long Path                ;                         ;             ; SA1|i613~0~_LAB_RE_X43_Y45_N0_I82                                             ;
+; Long Path                ; Bypassed Hyper-Register ;             ; SA1|fp32[24]~xbothalf/xale3/xcw_ml_le_regctrl/xcw_la_le_regctrl_reg/sclr_out  ;
+; Long Path                ;                         ;             ; SA1|fp32[24]|sclr                                                             ;
+; Domain Boundary Entry    ; REG (required)          ; #6          ; SA1|fp32[24]                                                                  ;
++--------------------------+-------------------------+-------------+-------------------------------------------------------------------------------+
+
+
+
++-----------------+
+; Retime Messages ;
++-----------------+
+Info (20032): Parallel compilation is enabled and will use up to 6 processors
+Info: *******************************************************************
+Info: Running Quartus Prime Fitter
+    Info: Version 26.1.0 Build 110 03/26/2026 SC Pro Edition
+    Info: Processing started: Sat Oct 31 23:01:12 2026
+    Info: System process ID: 12428
+Info: Command: quartus_fit --read_settings_files=on --write_settings_files=off fxp_cli -c FXP_V1 --dni
+Info: qfit2_default_script.tcl version: #1
+Info: Project  = fxp_cli
+Info: Revision = FXP_V1
+Info (17966): Starting Hyper-Retimer operations.
+Info (17968): Completed Hyper-Retimer operations.
+Info (18821): Fitter Hyper-Retimer operations ending: elapsed time is 00:00:01
+
+

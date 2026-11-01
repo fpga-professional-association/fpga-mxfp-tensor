@@ -1,0 +1,20 @@
+Fitter Status : Successful - Sat Oct 31 23:02:56 2026
+Quartus Prime Version : 26.1.0 Build 110 03/26/2026 SC Pro Edition
+Revision Name : FXP_V1
+Top-level Entity Name : fxp_dot
+Family : Agilex 3
+Device : A3CY100BM16AE7S
+Timing Models : Final
+Power Models : Final
+Device Status : Final
+Logic utilization (in ALMs) : 874 / 34,000 ( 3 % )
+Total dedicated logic registers : 1735
+Total pins : 0 / 254 ( 0 % )
+Total block memory bits : 0 / 5,365,760 ( 0 % )
+Total RAM Blocks : 0 / 262 ( 0 % )
+Total DSP Blocks : 4 / 276 ( 1 % )
+Total GTS Transceiver Channels : 0 / 4 ( 0 % )
+Total HSSI Ethernet Channels : 0 / 1 ( 0 % )
+Total HSSI PCIEs : 0 / 1 ( 0 % )
+Total HSSI HPS : 0 / 1 ( 0 % )
+Total PLLs : 0 / 11 ( 0 % )

@@ -24,6 +24,7 @@ paper never ran on hardware; this is the first silicon confirmation of its Secti
 | E2M3 (MXFP6) | 64/64 bit-exact, 240.1 MHz, latency 11, same harness with M = 3 |
 | W4A8-BFP (INT4-BFP weights x INT8-BFP activations, no decoder) | 64/64 bit-exact, 240 MHz, latency 11 |
 | W8A8-BFP (INT8-BFP x INT8-BFP, Altera's native format) | 64/64 bit-exact, 240 MHz, latency 11 |
+| Tensor fixed-point mode + fabric rescale (spec V1, `fxp_dot`) | 64/64 bit-exact for W8A8, W4A8 and MXFP4 lanes, latency 13; 3.5x the ALMs of the paper's unit, see `08` |
 
 ## What it took to make it run
 

@@ -1,0 +1,345 @@
+Fitter Route Stage Report for FXP_V1
+Sat Oct 31 23:02:40 2026
+Quartus Prime Version 26.1.0 Build 110 03/26/2026 SC Pro Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Nets with Highest Wire Count
+  3. Routing Usage Summary
+  4. Route Messages
+  5. Estimated Delay Added for Hold Timing Summary
+  6. Estimated Delay Added for Hold Timing Details
+  7. Global Router Wire Utilization Map
+  8. Peak Wire Demand Summary
+  9. Peak Wire Demand Details
+ 10. Peak Total Grid Crossings
+ 11. Global Router Congestion Hotspot Summary
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2026  Altera Corporation. All rights reserved.
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, the Altera Quartus Prime License Agreement,
+the Altera IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Altera and sold by Altera or its authorized distributors.  Please
+refer to the Altera Software License Subscription Agreements 
+on the Quartus Prime software download page.
+
+
+
++-------------------------------------+
+; Nets with Highest Wire Count        ;
++-----+----------------------+--------+
+; Net ; Number of Wires Used ; Fanout ;
++-----+----------------------+--------+
+; rst ; 143                  ; 119    ;
++-----+----------------------+--------+
+
+
++------------------------------------------------------------------+
+; Routing Usage Summary                                            ;
++--------------------------------------+---------------------------+
+; Routing Resource Type                ; Usage                     ;
++--------------------------------------+---------------------------+
+; Block Input Mux Wrapbacks            ; 6 / 43,616 ( < 1 % )      ;
+; Block Input Muxes                    ; 4,621 / 500,456 ( < 1 % ) ;
+; Block interconnects                  ; 3,833 / 526,400 ( < 1 % ) ;
+; C1 interconnects                     ; 1,353 / 234,240 ( < 1 % ) ;
+; C4 interconnects                     ; 157 / 229,360 ( < 1 % )   ;
+; C8 interconnects                     ; 0 / 22,936 ( 0 % )        ;
+; DCM_muxes                            ; 0 / 216 ( 0 % )           ;
+; DELAY_CHAINs                         ; 0 / 1,262 ( 0 % )         ;
+; Direct links                         ; 1,042 / 526,400 ( < 1 % ) ;
+; HIO Buffers                          ; 0 / 10,528 ( 0 % )        ;
+; IO75XDDRFMXCKTREE_CLKDRV_BIG_VCO_REs ; 0 / 8 ( 0 % )             ;
+; IO75XDDRFMXCKTREE_CLKDRV_GM0_REs     ; 0 / 8 ( 0 % )             ;
+; IO75XDDRFMXCKTREE_CLKDRV_VCO_INPUTs  ; 0 / 4 ( 0 % )             ;
+; IO75XDDRFMXCKTREE_CLKDRV_VCO_OUTPUTs ; 0 / 4 ( 0 % )             ;
+; IO75XDDRFMXCKTREE_FB_MUX31_REs       ; 0 / 24 ( 0 % )            ;
+; IOFBRADAPT_C2P_BUF_INPUTs            ; 0 / 66 ( 0 % )            ;
+; IOFBRADAPT_C2P_BUF_OUTPUTs           ; 0 / 66 ( 0 % )            ;
+; IOFBRADAPT_FRZ_BUFS_REs              ; 0 / 308 ( 0 % )           ;
+; IOFBRADAPT_P2C_BUF_INPUTs            ; 0 / 142 ( 0 % )           ;
+; IOFBRADAPT_P2C_BUF_OUTPUTs           ; 0 / 142 ( 0 % )           ;
+; Programmable Invert Buffers          ; 0 / 208 ( 0 % )           ;
+; Programmable Invert Inputs           ; 151 / 57,078 ( < 1 % )    ;
+; Programmable Inverts                 ; 151 / 57,078 ( < 1 % )    ;
+; R0 interconnects                     ; 2,240 / 401,380 ( < 1 % ) ;
+; R1 interconnects                     ; 1,325 / 229,360 ( < 1 % ) ;
+; R12 interconnects                    ; 0 / 34,404 ( 0 % )        ;
+; R2 interconnects                     ; 521 / 115,620 ( < 1 % )   ;
+; R4 interconnects                     ; 231 / 117,500 ( < 1 % )   ;
+; R6 interconnects                     ; 88 / 118,440 ( < 1 % )    ;
+; Redundancy Muxes                     ; 1 / 20,728 ( < 1 % )      ;
+; Row Clock Tap-Offs                   ; 109 / 34,404 ( < 1 % )    ;
+; Switchbox_clock_muxes                ; 3 / 1,920 ( < 1 % )       ;
+; VIO Buffers                          ; 0 / 8,320 ( 0 % )         ;
+; Vertical_seam_tap_muxes              ; 2 / 576 ( < 1 % )         ;
++--------------------------------------+---------------------------+
+
+
++----------------+
+; Route Messages ;
++----------------+
+Info (20032): Parallel compilation is enabled and will use up to 6 processors
+Info: *******************************************************************
+Info: Running Quartus Prime Fitter
+    Info: Version 26.1.0 Build 110 03/26/2026 SC Pro Edition
+    Info: Processing started: Sat Oct 31 23:01:12 2026
+    Info: System process ID: 12428
+Info: Command: quartus_fit --read_settings_files=on --write_settings_files=off fxp_cli -c FXP_V1 --dni
+Info: qfit2_default_script.tcl version: #1
+Info: Project  = fxp_cli
+Info: Revision = FXP_V1
+Info (22300): Design uses Placement Effort Multiplier = 0.8.
+Info (170193): Fitter routing operations beginning
+Info (20215): Router estimated peak short interconnect demand : 5% of up directional wire in region X36_Y40 to X47_Y47
+    Info (20265): Estimated peak short right directional wire demand : 0% in region X0_Y0 to X11_Y7
+    Info (20265): Estimated peak short left directional wire demand : 0% in region X0_Y0 to X11_Y7
+    Info (20265): Estimated peak short up directional wire demand : 5% in region X36_Y40 to X47_Y47
+    Info (20265): Estimated peak short down directional wire demand : 0% in region X0_Y0 to X11_Y7
+Info (20215): Router estimated peak long high speed interconnect demand : 100% of down directional wire in region X36_Y48 to X47_Y54
+    Info (20265): Estimated peak long high speed right directional wire demand : 13% in region X24_Y40 to X35_Y47
+    Info (20265): Estimated peak long high speed left directional wire demand : 42% in region X36_Y40 to X47_Y47
+    Info (20265): Estimated peak long high speed up directional wire demand : 75% in region X36_Y40 to X47_Y47
+    Info (20265): Estimated peak long high speed down directional wire demand : 100% in region X36_Y48 to X47_Y54
+    Info (20315): Note that the router may use short wires to implement long connections at higher delay
+Info (170239): Router is attempting to preserve 0.04 percent of routes from an earlier compilation, a user specified Routing Constraints File, or internal routing requirements.
+Info (21077): Low junction temperature is 0 degrees C
+Info (21077): High junction temperature is 100 degrees C
+Info (11888): Total time spent on timing analysis during Routing is 0.21 seconds.
+Info (16607): Fitter routing operations ending: elapsed time is 00:00:14
+
+
++------------------------------------------------------------+
+; Estimated Delay Added for Hold Timing Summary              ;
++-----------------+----------------------+-------------------+
+; Source Clock(s) ; Destination Clock(s) ; Delay Added in ns ;
++-----------------+----------------------+-------------------+
+Note: For more information on problematic transfers, consider running the Fitter again with the Optimize hold timing option (Settings Menu) turned off.
+This will disable optimization of problematic paths and expose them for further analysis using the Timing Analyzer.
+
+
++------------------------------------------------------------+
+; Estimated Delay Added for Hold Timing Details              ;
++-----------------+----------------------+-------------------+
+; Source Register ; Destination Register ; Delay Added in ns ;
++-----------------+----------------------+-------------------+
+Note: This table only shows the top 0 path(s) that have the largest delay added for hold.
+
+
+--------------------------------------
+; Global Router Wire Utilization Map ;
+--------------------------------------
+This report is unavailable in plain text report export.
+
+
++-------------------------------------------------------------------------------+
+; Peak Wire Demand Summary                                                      ;
++-----------------+-----------+-----------------------------------+-------------+
+; Wire            ; Direction ; Grid [(Xmin, Ymin), (Xmax, Ymax)] ; Peak Demand ;
++-----------------+-----------+-----------------------------------+-------------+
+; short           ; up        ; [(36, 40), (47, 47)]              ; 5.000 %     ;
+; long high speed ; right     ; [(24, 40), (35, 47)]              ; 13.851 %    ;
+; long high speed ; left      ; [(36, 40), (47, 47)]              ; 42.708 %    ;
+; long high speed ; up        ; [(36, 40), (47, 47)]              ; 75.000 %    ;
+; long high speed ; down      ; [(36, 48), (47, 54)]              ; 100.000 %   ;
++-----------------+-----------+-----------------------------------+-------------+
+
+
++------------------------------------------------------------------------------------------------------------+
+; Peak Wire Demand Details                                                                                   ;
++-----------------+-----------+-----------------------------------+-------------+----------------------------+
+; Wire            ; Direction ; Grid [(Xmin, Ymin), (Xmax, Ymax)] ; Peak Demand ; Net Names                  ;
++-----------------+-----------+-----------------------------------+-------------+----------------------------+
+; short           ; up        ; [(36, 40), (47, 47)]              ; 5.000 %     ;    High Routing Fan-Out    ;
+;     --          ;           ;                                   ;             ; rst                        ;
+;     --          ;           ;                                   ;             ; raw_out                    ;
+;     --          ;           ;                                   ;             ; SA1|i380~15xsyn            ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[19]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[17]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[18]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[27]         ;
+;     --          ;           ;                                   ;             ; SA1|mag_q[14]              ;
+;     --          ;           ;                                   ;             ; SA1|mag_q[21]              ;
+;     --          ;           ;                                   ;             ; SA1|mag_q[12]              ;
+; short           ; up        ; [(36, 40), (47, 47)]              ; 5.000 %     ;    Long Distance           ;
+;     --          ;           ;                                   ;             ; rst                        ;
+;     --          ;           ;                                   ;             ; raw_out                    ;
+;     --          ;           ;                                   ;             ; SA1|i380~15xsyn            ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[19]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[17]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[18]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[27]         ;
+;     --          ;           ;                                   ;             ; SA1|mag_q[14]              ;
+;     --          ;           ;                                   ;             ; SA1|mag_q[21]              ;
+;     --          ;           ;                                   ;             ; SA1|mag_q[12]              ;
+; long high speed ; right     ; [(24, 40), (35, 47)]              ; 13.851 %    ;    High Routing Fan-Out    ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[31]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[31]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[19]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[11]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[24]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[17]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[18]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[25]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[23]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[9]          ;
+; long high speed ; right     ; [(24, 40), (35, 47)]              ; 13.851 %    ;    Long Distance           ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[31]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[16]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[7]          ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[11]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[24]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[17]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[18]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[25]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[23]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_2[9]          ;
+; long high speed ; left      ; [(36, 40), (47, 47)]              ; 42.708 %    ;    High Routing Fan-Out    ;
+;     --          ;           ;                                   ;             ; rst                        ;
+;     --          ;           ;                                   ;             ; g_s3[30].P|stage_reg[5][3] ;
+;     --          ;           ;                                   ;             ; g_s3[30].P|stage_reg[5][5] ;
+;     --          ;           ;                                   ;             ; g_s3[30].P|stage_reg[5][6] ;
+;     --          ;           ;                                   ;             ; g_s3[31].P|stage_reg[5][0] ;
+;     --          ;           ;                                   ;             ; g_s3[31].P|stage_reg[5][2] ;
+;     --          ;           ;                                   ;             ; g_s3[31].P|stage_reg[5][3] ;
+;     --          ;           ;                                   ;             ; g_s3[31].P|stage_reg[5][4] ;
+;     --          ;           ;                                   ;             ; g_s3[31].P|stage_reg[5][5] ;
+;     --          ;           ;                                   ;             ; g_s3[31].P|stage_reg[5][6] ;
+; long high speed ; left      ; [(36, 40), (47, 47)]              ; 42.708 %    ;    Long Distance           ;
+;     --          ;           ;                                   ;             ; rst                        ;
+;     --          ;           ;                                   ;             ; g_s1[12].P|stage_reg[1][1] ;
+;     --          ;           ;                                   ;             ; g_s1[13].P|stage_reg[1][0] ;
+;     --          ;           ;                                   ;             ; g_s2[28].P|stage_reg[3][0] ;
+;     --          ;           ;                                   ;             ; g_s1[11].P|stage_reg[1][4] ;
+;     --          ;           ;                                   ;             ; g_s1[13].P|stage_reg[1][6] ;
+;     --          ;           ;                                   ;             ; g_s1[12].P|stage_reg[1][7] ;
+;     --          ;           ;                                   ;             ; g_s2[22].P|stage_reg[3][0] ;
+;     --          ;           ;                                   ;             ; g_s2[22].P|stage_reg[3][1] ;
+;     --          ;           ;                                   ;             ; g_s2[27].P|stage_reg[3][1] ;
+; long high speed ; up        ; [(36, 40), (47, 47)]              ; 75.000 %    ;    High Routing Fan-Out    ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[31]         ;
+;     --          ;           ;                                   ;             ; SA1|i380~3                 ;
+;     --          ;           ;                                   ;             ; SA1|i380~5                 ;
+;     --          ;           ;                                   ;             ; SA1|i173~0                 ;
+;     --          ;           ;                                   ;             ; SA1|i204~1                 ;
+;     --          ;           ;                                   ;             ; SA1|i148~0                 ;
+;     --          ;           ;                                   ;             ; SA1|i380~17xsyn            ;
+;     --          ;           ;                                   ;             ; SA1|i172~0                 ;
+;     --          ;           ;                                   ;             ; SA1|i174~0                 ;
+;     --          ;           ;                                   ;             ; SA1|i68~13                 ;
+; long high speed ; up        ; [(36, 40), (47, 47)]              ; 75.000 %    ;    Long Distance           ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[31]         ;
+;     --          ;           ;                                   ;             ; dot3|res_col_1[16]         ;
+;     --          ;           ;                                   ;             ; SA1|i380~3                 ;
+;     --          ;           ;                                   ;             ; SA1|i380~5                 ;
+;     --          ;           ;                                   ;             ; SA1|i173~0                 ;
+;     --          ;           ;                                   ;             ; SA1|i204~1                 ;
+;     --          ;           ;                                   ;             ; SA1|i148~0                 ;
+;     --          ;           ;                                   ;             ; SA1|i380~17xsyn            ;
+;     --          ;           ;                                   ;             ; SA1|i172~0                 ;
+;     --          ;           ;                                   ;             ; SA1|i174~0                 ;
+; long high speed ; down      ; [(36, 48), (47, 54)]              ; 100.000 %   ;    High Routing Fan-Out    ;
+;     --          ;           ;                                   ;             ; SA1|i380~14                ;
+;     --          ;           ;                                   ;             ; SA1|i380~10                ;
+;     --          ;           ;                                   ;             ; SA1|lz_q[1]~RTM_21         ;
+;     --          ;           ;                                   ;             ; SA1|lz_q[4]~RTM            ;
+;     --          ;           ;                                   ;             ; SA1|i234~xsyn              ;
+;     --          ;           ;                                   ;             ; SA1|shift_left_0~36        ;
+;     --          ;           ;                                   ;             ; SA1|shift_left_0~7         ;
+;     --          ;           ;                                   ;             ; SA1|shift_left_0~2         ;
+;     --          ;           ;                                   ;             ; SA1|shift_left_0~4         ;
+;     --          ;           ;                                   ;             ; SA1|i68~24                 ;
+; long high speed ; down      ; [(36, 48), (47, 54)]              ; 100.000 %   ;    Long Distance           ;
+;     --          ;           ;                                   ;             ; g_in[1].P|stage_reg[0][1]  ;
+;     --          ;           ;                                   ;             ; g_s1[12].P|stage_reg[1][1] ;
+;     --          ;           ;                                   ;             ; g_s1[11].P|stage_reg[1][4] ;
+;     --          ;           ;                                   ;             ; g_s1[12].P|stage_reg[1][7] ;
+;     --          ;           ;                                   ;             ; g_s1[13].P|stage_reg[1][6] ;
+;     --          ;           ;                                   ;             ; g_s1[17].P|stage_reg[1][3] ;
+;     --          ;           ;                                   ;             ; g_s1[18].P|stage_reg[1][4] ;
+;     --          ;           ;                                   ;             ; g_in[0].P|stage_reg[0][6]  ;
+;     --          ;           ;                                   ;             ; g_in[1].P|stage_reg[0][2]  ;
+;     --          ;           ;                                   ;             ; g_in[2].P|stage_reg[0][0]  ;
++-----------------+-----------+-----------------------------------+-------------+----------------------------+
+
+
++---------------------------------------------------+
+; Peak Total Grid Crossings                         ;
++----------------------------+----------------------+
+; Net Name                   ; Total Grid Crossings ;
++----------------------------+----------------------+
+; rst                        ; 4                    ;
+; dot3|res_col_1[7]          ; 3                    ;
+; raw_out                    ; 2                    ;
+; g_in[8].P|stage_reg[0][1]  ; 2                    ;
+; g_in[8].P|stage_reg[0][0]  ; 2                    ;
+; g_in[7].P|stage_reg[0][6]  ; 2                    ;
+; g_in[7].P|stage_reg[0][5]  ; 2                    ;
+; g_in[7].P|stage_reg[0][4]  ; 2                    ;
+; g_in[7].P|stage_reg[0][1]  ; 2                    ;
+; g_in[7].P|stage_reg[0][0]  ; 2                    ;
+; g_in[6].P|stage_reg[0][7]  ; 2                    ;
+; g_in[6].P|stage_reg[0][6]  ; 2                    ;
+; g_in[5].P|stage_reg[0][5]  ; 2                    ;
+; g_in[5].P|stage_reg[0][0]  ; 2                    ;
+; g_in[4].P|stage_reg[0][7]  ; 2                    ;
+; g_in[4].P|stage_reg[0][1]  ; 2                    ;
+; g_in[3].P|stage_reg[0][5]  ; 2                    ;
+; g_in[3].P|stage_reg[0][1]  ; 2                    ;
+; g_in[3].P|stage_reg[0][0]  ; 2                    ;
+; g_in[2].P|stage_reg[0][7]  ; 2                    ;
+; g_in[2].P|stage_reg[0][1]  ; 2                    ;
+; g_in[2].P|stage_reg[0][0]  ; 2                    ;
+; g_in[1].P|stage_reg[0][2]  ; 2                    ;
+; g_in[1].P|stage_reg[0][1]  ; 2                    ;
+; g_in[0].P|stage_reg[0][6]  ; 2                    ;
+; g_s1[18].P|stage_reg[1][4] ; 2                    ;
+; g_s1[17].P|stage_reg[1][3] ; 2                    ;
+; g_s1[13].P|stage_reg[1][6] ; 2                    ;
+; g_s1[13].P|stage_reg[1][0] ; 2                    ;
+; g_s1[12].P|stage_reg[1][7] ; 2                    ;
+; g_s1[12].P|stage_reg[1][1] ; 2                    ;
+; g_s1[11].P|stage_reg[1][4] ; 2                    ;
+; g_s2[28].P|stage_reg[3][0] ; 2                    ;
+; g_s2[27].P|stage_reg[3][1] ; 2                    ;
+; g_s2[22].P|stage_reg[3][1] ; 2                    ;
+; g_s2[22].P|stage_reg[3][0] ; 2                    ;
+; dot3|res_col_1[31]         ; 2                    ;
+; dot3|res_col_1[16]         ; 2                    ;
+; SA1|lz_q[5]~RTM_42         ; 1                    ;
+; SA1|lz_q[5]~RTM_40         ; 1                    ;
+; SA1|i308~10                ; 1                    ;
+; SA1|lz_q[1]~RTM_19         ; 1                    ;
+; SA1|lz_q[0]~RTM_12         ; 1                    ;
+; SA1|lz_q[0]~RTM_11         ; 1                    ;
+; SA1|i273~0xsyn_5           ; 1                    ;
+; SA1|lz_q[0]~RTM_2          ; 1                    ;
+; SA1|i344~2                 ; 1                    ;
+; SA1|i68~10                 ; 1                    ;
+; SA1|lz_q[1]~RTM_21         ; 1                    ;
+; SA1|lz_q[5]~RTM_29         ; 1                    ;
++----------------------------+----------------------+
+
+
+--------------------------------------------
+; Global Router Congestion Hotspot Summary ;
+--------------------------------------------
+No congestion hotspots found where global router short wire usage exceeded 100%.
+If the design is hard to route, use other techniques to analyze congestion. Refer to the Estimated Delay Added for Hold Timing section in the Fitter report and routing utilization in the Chip Planner.
+
+
